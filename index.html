@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>beyonddepression</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;400&family=Noto+Sans+JP:wght@300;400&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+<canvas class="rain-canvas" id="rainCanvas"></canvas>
+<div class="content-layer">
+
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span>Здарова, отписываю тебе по забиву как ты просил. Мит xivivide завтра в 14:00, пиздилка 40х40, строимся пауком, ты в правой передней лапе, придётся впитать слегка, но тебе не привыкать. До встречи.&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
+    <span>Здарова, отписываю тебе по забиву как ты просил. Мит xivivide завтра в 14:00, пиздилка 40х40, строимся пауком, ты в правой передней лапе, придётся впитать слегка, но тебе не привыкать. До встречи.&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
+    <span>Здарова, отписываю тебе по забиву как ты просил. Мит xivivide завтра в 14:00, пиздилка 40х40, строимся пауком, ты в правой передней лапе, придётся впитать слегка, но тебе не привыкать. До встречи.&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
+    <span>Здарова, отписываю тебе по забиву как ты просил. Мит xivivide завтра в 14:00, пиздилка 40х40, строимся пауком, ты в правой передней лапе, придётся впитать слегка, но тебе не привыкать. До встречи.&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
+    <span>Здарова, отписываю тебе по забиву как ты просил. Мит xivivide завтра в 14:00, пиздилка 40х40, строимся пауком, ты в правой передней лапе, придётся впитать слегка, но тебе не привыкать. До встречи.&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
+    <span>Здарова, отписываю тебе по забиву как ты просил. Мит xivivide завтра в 14:00, пиздилка 40х40, строимся пауком, ты в правой передней лапе, придётся впитать слегка, но тебе не привыкать. До встречи.&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
+    <span>Здарова, отписываю тебе по забиву как ты просил. Мит xivivide завтра в 14:00, пиздилка 40х40, строимся пауком, ты в правой передней лапе, придётся впитать слегка, но тебе не привыкать. До встречи.&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
+  </div>
+</div>
+
+<nav class="site-nav">
+  <div class="nav-inner">
+    <ul class="nav-links">
+      <li><a href="index.html">~home</a></li>
+      <li><a href="pages/trophy.html">dota2_zone</a></li>
+      <li><a href="pages/music.html">music_room</a></li>
+      <li><a href="pages/gallery.html">gallery</a></li>
+      <li><a href="pages/games.html">mini_games</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="nav-mobile" id="navMobile">
+    <a href="index.html">~home</a>
+    <a href="pages/trophy.html">dota2_zone</a>
+    <a href="pages/music.html">music_room</a>
+    <a href="pages/gallery.html">gallery</a>
+    <a href="pages/games.html">mini_games</a>
+  </div>
+</nav>
+
+<header>
+  <div class="container">
+    <div class="hero-image-wrap">
+  <picture>
+    <source srcset="assets/img/beyond_image_optimized.webp" type="image/webp">
+    <img class="hero-image" 
+         src="assets/img/beyond_image.jpg" 
+         fetchpriority="high"
+         alt="beyonddepression visual interpretation"
+         decoding="async">
+  </picture>
+  </div>
+
+    <div class="fade-in">
+      <p class="hero-sub">[ ... / personal archive / ... ]</p>
+      <h1 class="hero-title glitch cursor" data-text="beyonddepression">beyonddepression</h1>
+      <p class="hero-status"><span class="status-dot"></span>--- Мой джуджун не объект для насмешек</p>
+    </div>
+  </div>
+</header>
+
+<section id="rooms">
+  <div class="container">
+    <p class="sec-label fade-in">rooms</p>
+    <div class="rooms-grid stagger">
+      <a class="room-card" href="pages/trophy.html">
+        <span class="room-icon">🏆</span>
+        <span class="room-name">dota2_zone</span>
+        <span class="room-desc">Gaming stats, ranks, analytics</span>
+      </a>
+      <a class="room-card" href="pages/music.html">
+        <span class="room-icon">🎵</span>
+        <span class="room-name">music_room</span>
+        <span class="room-desc">Player, playlist, scrobbles</span>
+      </a>
+      <a class="room-card" href="pages/gallery.html">
+        <span class="room-icon">🖼</span>
+        <span class="room-name">gallery</span>
+        <span class="room-desc">Screenshots, art, pixels</span>
+      </a>
+      <a class="room-card" href="pages/games.html">
+        <span class="room-icon">🎮</span>
+        <span class="room-name">mini_games</span>
+        <span class="room-desc">Snake, memory, other</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="container fade-in">
+    <p class="sec-label">about</p>
+    <div class="about-grid">
+      <div class="avatar-wrap">
+        <img class="avatar" src="assets/img/avatar.jpg" alt="avatar"/>
+      </div> 
+      <div class="about-text stagger visible">
+  <p><strong>beyonddepression</strong> — Санек, Ивано-Франковск, 18 лет, <span class="val-red">Dota 2 player</span>, рост 180, жму мало, прическа называется волосы на глаза, тату на шее неприятно, <span class="val-red">//всем спорт</span>.</p>
+
+  <p>
+    <span class="now-card-label" style="display:inline-block; margin-right:5px;">[log:interests]</span>
+    люблю <span class="val-viperr">☠☠☠вайперр</span> и всё что с ним связано,
+    риковенсы, хм2,<span class="val-red"> найнмацс))</span>
+    ракаю архив шмотки(2008 если понимаешь о чем я). часто слушаю <span class="val-viperr">вайперр</span>, это мое хобби, встаю перед ними на колени
+  </p>
+
+  <div class="about-quote">
+    <p>Люблю тебя сильно-сильно, твои глаза прекрасны, подобно чёрному лотосу, пускай они и косые, но и лепестки порой тоже сдувает ветром...</p>
+  </div>
+
+  <p style="font-size: 12px; color:var(--dim);">  Изначально утвердим твое положение. Ты ебучий lame без Rick Owens Geobasket, Rick Owens Cargobasket.
+1) Ты без скита (uid 1337 можешь пмнуть ну давай-давай-давай пмни меня уебан), без турбера, без ровера, без свэгги. У тебя джуганная swagga парень.
+Кстати о джуганном, дж = g знаешь где эта буква встречается? Правильно это же мои кросовки Rick Owens Geobasket которых у тебя никогда не будет
+нищий кста напомню чего у тебя еще нету это : айдишки скита риковенс геобаскет риковенс каргобаскет у тебя нету коннекта с шайни коннекта с аглистефаном по краней мере хотя бы с Melon Gang
+если ты думаешь что у тебя есть нелегит Rick Owens Рамоны (XDDDDDDDDDDDDDD) и ты можешь настроить со мной какую либо коммуникацию то я тебя разочарую с такими ебаными broуками как ты я даже разговаривать не стану.
+  </p>
+          <span class="tag">dota2</span>
+          <span class="tag">cs2</span>
+          <span class="tag">music</span>
+          <span class="tag">analytics</span>
+          <span class="tag">anime</span>
+          <span class="tag">fame</span>
+          <span class="tag">void</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="now">
+  <div class="container">
+    <p class="sec-label fade-in">now</p>
+    <div class="now-grid stagger">
+      <div class="now-card">
+        <div class="now-card-label">playing</div>
+        <div class="now-card-value">Dota 2 <span>/ pos 1,3</span></div>
+      </div>
+      <div class="now-card">
+        <div class="now-card-label">listening</div>
+        <div class="now-card-value" id="nowListening">— <span>silence</span></div>
+      </div>
+      <div class="now-card">
+        <div class="now-card-label">vibe</div>
+        <div class="now-card-value">despondent <span>/ tilted</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="connect">
+  <div class="container fade-in">
+    <p class="sec-label">connect</p>
+    <div class="connect-grid">
+
+      <div class="socials-list" id="socialsContainer"></div>
+
+      <div class="contact-col">
+
+        <div class="contact-block">
+          <div class="contact-block-label">email</div>
+          <a class="email-link" href="mailto:qr11111@tutamail.com">qr11111@tutamail.com</a>
+        </div>
+
+        <div class="contact-block">
+          <div class="contact-block-label">discord</div>
+          <div class="discord-copy">
+            <span class="discord-tag" id="discordTag">beyonddepression</span>
+            <button class="copy-btn" id="copyDiscord">copy</button>
+          </div>
+        </div>
+
+        <div class="contact-block">
+          <div class="contact-block-label">guestbook</div>
+          <div class="guestbook-note" id="guestSnippet"><pre style="font-family: inherit; white-space: pre-wrap;">
+все заслуживают любви,но не я.
+я заслуживаю:
+загородный дом в
+Британии,бибику под
+названием  Nissan R390 GT1 1997,ну и кнша братков, чтоб тусить туда сюда
+</pre></div>
+          <div class="guestbook-author" id="guestAuthor">— anon, 2026</div>
+          <a class="mini-btn" href="#guestbook-modal" id="openGuestbook">leave a note →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="guestbook-modal" style="display:none; position:fixed; inset:0; background:#000c; z-index:200; align-items:center; justify-content:center;">
+  <div style="background:var(--bg3); border:1px solid var(--line2); border-radius:var(--radius); padding:32px; max-width:400px; width:90%; position:relative;">
+    <button id="closeGuest" style="position:absolute;top:12px;right:14px;background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;">×</button>
+    <p style="font-family:var(--mono);font-size:10px;letter-spacing:0.3em;color:var(--dim);text-transform:uppercase;margin-bottom:20px;">leave a note</p>
+    <input id="gbName" type="text" placeholder="your name / handle" maxlength="32"
+      style="width:100%;background:#0a0a0a;border:1px solid var(--line2);color:var(--text);font-family:var(--mono);font-size:12px;padding:10px 12px;border-radius:6px;margin-bottom:10px;outline:none;"/>
+    <textarea id="gbMsg" placeholder="say something..." maxlength="160" rows="4"
+      style="width:100%;background:#0a0a0a;border:1px solid var(--line2);color:var(--text);font-family:var(--mono);font-size:12px;padding:10px 12px;border-radius:6px;resize:none;outline:none;margin-bottom:14px;"></textarea>
+    <button id="gbSubmit"
+      style="font-family:var(--mono);font-size:11px;letter-spacing:0.15em;background:var(--accent);color:#fff;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;width:100%;transition:opacity .2s;">
+      submit →
+    </button>
+    <p id="gbStatus" style="font-family:var(--mono);font-size:10px;color:var(--dim);margin-top:10px;text-align:center;"></p>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="footer-text">
+      <a href="index.html">~</a> &nbsp;·&nbsp;
+      <a href="pages/trophy.html">dota2</a> &nbsp;·&nbsp;
+      <a href="pages/music.html">music</a> &nbsp;·&nbsp;
+      <a href="pages/gallery.html">gallery</a> &nbsp;·&nbsp;
+      <a href="pages/games.html">games</a>
+    </p>
+  </div>
+</footer>
+
+</div>
+<script src="js/shared.js"></script>
+<script src="js/index.js"></script>
+</body>
+</html>

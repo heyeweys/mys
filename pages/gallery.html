@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>gallery — beyonddepression</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;400&family=Noto+Sans+JP:wght@300;400&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/base.css"/>
+  <link rel="stylesheet" href="../css/gallery.css"/>
+
+</head>
+<body>
+<canvas class="rain-canvas" id="rainCanvas"></canvas>
+<div class="content-layer">
+
+<!-- NAV -->
+<nav class="site-nav">
+  <div class="nav-inner">
+    <ul class="nav-links">
+      <li><a href="../index.html">~home</a></li>
+      <li><a href="trophy.html">dota2_zone</a></li>
+      <li><a href="music.html">music_room</a></li>
+      <li><a href="gallery.html">gallery</a></li>
+      <li><a href="games.html">mini_games</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="nav-mobile" id="navMobile">
+    <a href="../index.html">~home</a>
+    <a href="trophy.html">dota2_zone</a>
+    <a href="music.html">music_room</a>
+    <a href="gallery.html">gallery</a>
+    <a href="games.html">mini_games</a>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+    <div class="page-header fade-in">
+      <p class="page-header-label">/ gallery</p>
+      <h1 class="page-header-title">Gallery</h1>
+      <p class="page-header-sub">screenshots · art · pixels · moments</p>
+    </div>
+
+    <section style="border-top:none; padding-top:0;">
+
+      <!-- FILTER BAR -->
+      <div class="filter-bar fade-in" id="filterBar">
+        <button class="filter-btn active" data-filter="all">all</button>
+        <button class="filter-btn" data-filter="screenshots">screenshots</button>
+        <button class="filter-btn" data-filter="art">art</button>
+        <button class="filter-btn" data-filter="pixel">pixel</button>
+        <button class="filter-btn" data-filter="misc">misc</button>
+      </div>
+
+      <!-- GALLERY GRID -->
+      <div class="gallery-grid fade-in" id="galleryGrid">
+        <!--
+          TO ADD IMAGES:
+          Replace src with your image path.
+          data-tag: screenshots | art | pixel | misc
+          data-caption: image title
+
+          Example:
+          <div class="gallery-item" data-tag="screenshots" data-caption="my 5k mmr peak">
+            <img src="images/dota_peak.jpg" alt="..."/>
+            <div class="gallery-item-overlay">
+              <div class="gallery-item-caption">
+                <span class="gallery-item-tag">screenshots</span>
+                my 5k mmr peak
+              </div>
+            </div>
+          </div>
+        -->
+      </div>
+
+      <!-- EMPTY STATE -->
+      <div id="emptyState" style="text-align:center; padding:80px 0;">
+        <p style="font-family:var(--mono);font-size:10px;color:var(--line2);letter-spacing:0.3em;">
+          NO IMAGES YET<br/><br/>
+          <span style="color:#1e1e1e;">
+            Add items to the GALLERY array<br/>
+            in the &lt;script&gt; tag below
+          </span>
+        </p>
+      </div>
+
+    </section>
+  </div>
+</main>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lbClose">×</button>
+  <img class="lightbox-img" id="lbImg" src="" alt=""/>
+  <div class="lightbox-caption" id="lbCaption"></div>
+  <button class="lightbox-nav prev" id="lbPrev">‹</button>
+  <button class="lightbox-nav next" id="lbNext">›</button>
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="footer-text">beyonddepression &nbsp;·&nbsp; <a href="../index.html">← back home</a></p>
+  </div>
+</footer>
+
+</div>
+<script src="../js/shared.js"></script>
+<script src="../js/gallery.js"></script>
+</body>
+</html>

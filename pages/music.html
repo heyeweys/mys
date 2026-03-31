@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>music_room — beyonddepression</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;400&family=Noto+Sans+JP:wght@300;400&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/base.css"/>
+  <link rel="stylesheet" href="../css/music.css"/>
+  <script src="https://w.soundcloud.com/player/api.js"></script>
+  
+</head>
+<body>
+<canvas class="rain-canvas" id="rainCanvas"></canvas>
+<div class="content-layer">
+ 
+<nav class="site-nav">
+  <div class="nav-inner">
+    <ul class="nav-links">
+      <li><a href="../index.html">~home</a></li>
+      <li><a href="trophy.html">dota2_zone</a></li>
+      <li><a href="music.html">music_room</a></li>
+      <li><a href="gallery.html">gallery</a></li>
+      <li><a href="games.html">mini_games</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
+  <div class="nav-mobile" id="navMobile">
+    <a href="../index.html">~home</a>
+    <a href="trophy.html">dota2_zone</a>
+    <a href="music.html">music_room</a>
+    <a href="gallery.html">gallery</a>
+    <a href="games.html">mini_games</a>
+  </div>
+</nav>
+ 
+<main>
+  <div class="container">
+    <div class="page-header fade-in">
+      <p class="page-header-label">/ music_room</p>
+      <h1 class="page-header-title">Music Room</h1>
+      <p class="page-header-sub">play something, stay a while</p>
+    </div>
+ 
+    <section style="border-top:none; padding-top:0;">
+      <div class="music-layout">
+ 
+        <div class="mplayer fade-in">
+          <div class="mp-cover">
+            <img class="mp-cover-art" id="coverArt" src="" alt="cover"/>
+            <span class="mp-cover-placeholder" id="coverPlaceholder">♪</span>
+          </div>
+ 
+          <div class="mp-track">
+            <span class="mp-track-inner" id="lcdTrack">Загрузка плейлиста...</span>
+          </div>
+          <div class="mp-artist" id="lcdArtist">—</div>
+ 
+          <div class="mp-progress" id="progressBar">
+            <div class="mp-progress-fill" id="progressFill"></div>
+          </div>
+          <div class="mp-time-row">
+            <span id="lcdTime">0:00</span>
+            <span id="lcdDuration">0:00</span>
+          </div>
+ 
+          <div class="mp-transport">
+            <button class="mp-btn" id="btnShuffle" title="Shuffle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+            </button>
+            <button class="mp-btn" id="btnPrev" title="Previous">
+              <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <button class="mp-btn mp-btn-play" id="btnPlay" title="Play/Pause">
+              <svg id="iconPlay"  viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <svg id="iconPause" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+            </button>
+            <button class="mp-btn" id="btnNext" title="Next">
+              <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+ 
+          <div class="mp-vol-container">
+            <span class="mp-vol-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+            </span>
+            <div class="mp-vol-track" id="volSlider">
+              <div class="mp-vol-fill" id="volFill"></div>
+            </div>
+          </div>
+        </div>
+ 
+        <div class="fade-in">
+          <div class="playlist-header">
+            <p class="sec-label" style="margin-bottom:0;">SoundCloud Playlist</p>
+            <span class="playlist-count" id="plCount">—</span>
+          </div>
+          <div class="pl-items" id="plItems"></div>
+ 
+          <div class="genre-section">
+            <p class="sec-label" style="margin-bottom:12px;">tags</p>
+            <div class="tag-list">
+              <span class="tag">drum and bass</span>
+              <span class="tag">jungle</span>
+              <span class="tag">liquid</span>
+              <span class="tag">electronic</span>
+            </div>
+          </div>
+        </div>
+ 
+      </div>
+    </section>
+  </div>
+</main>
+ 
+<!-- Hidden SoundCloud widget (API source) -->
+<iframe id="sc-widget" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay"
+  src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/heyeweys/sets/drum-n-bass&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false"
+  style="display:none;">
+</iframe>
+ 
+<footer class="site-footer">
+  <div class="container">
+    <p class="footer-text">beyonddepression &nbsp;·&nbsp; <a href="../index.html">← back home</a></p>
+  </div>
+</footer>
+</div>
+ 
+<script src="../js/shared.js"></script>
+<script src="../js/music.js"></script>
+</body>
+</html>

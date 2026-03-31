@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>dota2_zone — beyonddepression</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'self' blob: data: https://api.opendota.com https://api.allorigins.win; img-src * data: blob:;">
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;400&family=Noto+Sans+JP:wght@300;400&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/base.css"/>
+  <link rel="stylesheet" href="../css/trophy.css">
+
+</head>
+<body>
+<canvas class="rain-canvas" id="rainCanvas"></canvas>
+<div class="content-layer">
+ 
+<nav class="site-nav">
+  <div class="nav-inner">
+    <ul class="nav-links">
+      <li><a href="../index.html">~home</a></li>
+      <li><a href="trophy.html">dota2_zone</a></li>
+      <li><a href="music.html">music_room</a></li>
+      <li><a href="gallery.html">gallery</a></li>
+      <li><a href="games.html">mini_games</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
+  <div class="nav-mobile" id="navMobile">
+    <a href="../index.html">~home</a>
+    <a href="trophy.html">dota2_zone</a>
+    <a href="music.html">music_room</a>
+    <a href="gallery.html">gallery</a>
+    <a href="games.html">mini_games</a>
+  </div>
+</nav>
+ 
+<main>
+  <div class="container">
+ 
+    <div class="page-header fade-in">
+      <p class="page-header-label">/ dota2_zone</p>
+      <h1 class="page-header-title">Gaming Records</h1>
+      <p class="page-header-sub">info from opendota api</p>
+    </div>
+ 
+    <div class="game-header">
+      <div class="game-title-wrap">
+        <span class="game-title">Dota 2</span>
+      </div>
+      <div class="game-links">
+        <a href="https://www.opendota.com/players/1191935552" target="_blank" rel="noopener">opendota ↗</a>
+        <a href="https://www.dotabuff.com/players/1191935552" target="_blank" rel="noopener">dotabuff ↗</a>
+        <a href="https://stratz.com/players/1191935552" target="_blank" rel="noopener">stratz ↗</a>
+      </div>
+    </div>
+ 
+    <!-- MMR -->
+    <div class="fade-in">
+      <div class="rank-row">
+        <div class="mmr-number" id="dotaMMR">
+          <span class="skel" style="width:200px;height:72px;display:inline-block;border-radius:6px;"></span>
+        </div>
+        <div class="mmr-aside">
+          <span class="mmr-badge" id="dotaRank">…</span>
+          <div class="rank-stars" id="rankStars">
+            <div class="rank-star"></div><div class="rank-star"></div><div class="rank-star"></div>
+            <div class="rank-star"></div><div class="rank-star"></div>
+          </div>
+        </div>
+      </div>
+      <p class="mmr-meta">MMR · Solo Ranked</p>
+    </div>
+ 
+    <!-- W/L BAR -->
+    <div class="wl-wrap fade-in">
+      <div class="wl-row">
+        <span class="c-win"  id="wlW">WIN —</span>
+        <span class="c-dim"  id="wlWR">—%</span>
+        <span class="c-loss" id="wlL">LOSS —</span>
+      </div>
+      <div class="wl-track"><div class="wl-fill" id="wlFill"></div></div>
+    </div>
+ 
+    <!-- STAT GRID -->
+    <div class="stat-grid stagger">
+      <div class="stat-cell accent-green">
+        <div class="stat-label">Win Rate</div>
+        <div class="stat-val v-green" id="sgWR"><span class="skel" style="width:54px;height:22px;"></span></div>
+        <div class="stat-sub" id="sgWRsub">—</div>
+      </div>
+      <div class="stat-cell accent-dim">
+        <div class="stat-label">Матчей</div>
+        <div class="stat-val" id="sgMatches"><span class="skel" style="width:54px;height:22px;"></span></div>
+        <div class="stat-sub">all time</div>
+      </div>
+      <div class="stat-cell accent-red">
+        <div class="stat-label">K / D / A avg</div>
+        <div class="stat-val v-accent v-small" id="sgKDA"><span class="skel" style="width:90px;height:22px;"></span></div>
+        <div class="stat-sub">recent 20 matches</div>
+      </div>
+      <div class="stat-cell accent-dim">
+        <div class="stat-label">Роль</div>
+        <div class="stat-val" style="font-size:20px;">Pos 1/3</div>
+        <div class="stat-sub">carry</div>
+      </div>
+      <div class="stat-cell accent-dim">
+        <div class="stat-label">Стрик</div>
+        <div class="stat-val" id="sgStreak"><span class="skel" style="width:44px;height:22px;"></span></div>
+        <div class="stat-sub" id="sgStreakLbl">recent</div>
+      </div>
+      <div class="stat-cell accent-dim">
+        <div class="stat-label">Наибольшее количество матчей</div>
+        <div class="stat-val v-small" id="sgMain"><span class="skel" style="width:80px;height:22px;"></span></div>
+        <div class="stat-sub" id="sgMainSub">— games</div>
+      </div>
+    </div>
+ 
+    <!-- HEROES ALL TIME -->
+    <p class="sec-label" style="margin-bottom:14px;">топ герои · all time</p>
+    <div class="hero-board stagger" id="heroList">
+      <div class="hero-board-head">
+        <div class="hbh-cell">#</div>
+        <div class="hbh-cell">Герой</div>
+        <div class="hbh-cell">Игры</div>
+        <div class="hbh-cell right">Win%</div>
+        <div class="hbh-cell right">KDA</div>
+      </div>
+      <div class="hero-row"><span class="hr-rank">—</span><span class="skel" style="width:100px;height:12px;"></span><div></div><div></div><div></div></div>
+      <div class="hero-row"><span class="hr-rank">—</span><span class="skel" style="width:80px;height:12px;"></span><div></div><div></div><div></div></div>
+      <div class="hero-row"><span class="hr-rank">—</span><span class="skel" style="width:90px;height:12px;"></span><div></div><div></div><div></div></div>
+      <div class="hero-row"><span class="hr-rank">—</span><span class="skel" style="width:70px;height:12px;"></span><div></div><div></div><div></div></div>
+      <div class="hero-row"><span class="hr-rank">—</span><span class="skel" style="width:85px;height:12px;"></span><div></div><div></div><div></div></div>
+      <div class="hero-row"><span class="hr-rank">—</span><span class="skel" style="width:75px;height:12px;"></span><div></div><div></div><div></div></div>
+      <div class="hero-row"><span class="hr-rank">—</span><span class="skel" style="width:95px;height:12px;"></span><div></div><div></div><div></div></div>
+      <div class="hero-row"><span class="hr-rank">—</span><span class="skel" style="width:65px;height:12px;"></span><div></div><div></div><div></div></div>
+    </div>
+ 
+    <!-- RECENT MATCHES -->
+    <p class="sec-label" style="margin-top:40px;margin-bottom:14px;">последние матчи</p>
+    <div class="match-feed stagger" id="matchList">
+      <div class="match-item"><div class="mi-stripe loss"></div><div class="mi-result-col"><span class="skel" style="width:28px;height:18px;border-radius:3px;"></span></div><div class="mi-main"><span class="skel" style="width:100px;height:12px;"></span><span class="skel" style="width:70px;height:10px;margin-top:4px;"></span></div><div class="mi-right"><span class="skel" style="width:44px;height:11px;"></span><span class="skel" style="width:36px;height:9px;margin-top:3px;"></span></div></div>
+      <div class="match-item"><div class="mi-stripe win"></div><div class="mi-result-col"><span class="skel" style="width:28px;height:18px;border-radius:3px;"></span></div><div class="mi-main"><span class="skel" style="width:90px;height:12px;"></span><span class="skel" style="width:60px;height:10px;margin-top:4px;"></span></div><div class="mi-right"><span class="skel" style="width:44px;height:11px;"></span><span class="skel" style="width:36px;height:9px;margin-top:3px;"></span></div></div>
+      <div class="match-item"><div class="mi-stripe loss"></div><div class="mi-result-col"><span class="skel" style="width:28px;height:18px;border-radius:3px;"></span></div><div class="mi-main"><span class="skel" style="width:110px;height:12px;"></span><span class="skel" style="width:65px;height:10px;margin-top:4px;"></span></div><div class="mi-right"><span class="skel" style="width:44px;height:11px;"></span><span class="skel" style="width:36px;height:9px;margin-top:3px;"></span></div></div>
+      <div class="match-item"><div class="mi-stripe win"></div><div class="mi-result-col"><span class="skel" style="width:28px;height:18px;border-radius:3px;"></span></div><div class="mi-main"><span class="skel" style="width:95px;height:12px;"></span><span class="skel" style="width:68px;height:10px;margin-top:4px;"></span></div><div class="mi-right"><span class="skel" style="width:44px;height:11px;"></span><span class="skel" style="width:36px;height:9px;margin-top:3px;"></span></div></div>
+    </div>
+ 
+  </div>
+</main>
+ 
+<footer class="site-footer">
+  <div class="container">
+    <p class="footer-text">beyonddepression &nbsp;·&nbsp; <a href="../index.html">← back home</a></p>
+  </div>
+</footer>
+</div>
+ 
+<script src="../js/shared.js"></script>
+<script src="../js/trophy.js"></script>
+</body>
+</html>

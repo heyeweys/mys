@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>mini_games — beyonddepression</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;400&family=Noto+Sans+JP:wght@300;400&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/base.css"/>
+  <link rel="stylesheet" href="../css/games.css"/>
+ 
+</head>
+<body>
+<canvas class="rain-canvas" id="rainCanvas"></canvas>
+<div class="content-layer">
+
+<!-- NAV -->
+<nav class="site-nav">
+  <div class="nav-inner">
+    <ul class="nav-links">
+      <li><a href="../index.html">~home</a></li>
+      <li><a href="trophy.html">dota2_zone</a></li>
+      <li><a href="music.html">music_room</a></li>
+      <li><a href="gallery.html">gallery</a></li>
+      <li><a href="games.html">mini_games</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="nav-mobile" id="navMobile">
+    <a href="../index.html">~home</a>
+    <a href="trophy.html">dota2_zone</a>
+    <a href="music.html">music_room</a>
+    <a href="gallery.html">gallery</a>
+    <a href="games.html">mini_games</a>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+    <div class="page-header fade-in">
+      <p class="page-header-label">/ mini_games</p>
+      <h1 class="page-header-title">Mini Games</h1>
+      <p class="page-header-sub">kill time in the void</p>
+    </div>
+
+    <section style="border-top:none; padding-top:0;">
+
+      <!-- SELECTOR -->
+      <div class="games-selector fade-in">
+        <button class="game-tab active" data-game="snake">snake</button>
+        <button class="game-tab" data-game="memory">memory</button>
+        <button class="game-tab" data-game="void">void_clicker</button>
+      </div>
+
+      <!-- ══ SNAKE ══════════════════════════════ -->
+      <div class="game-panel active" id="panel-snake">
+        <div class="game-container fade-in">
+          <div class="game-scorebar">
+            <div><div class="game-score-val red" id="snakeScore">000</div><div>score</div></div>
+            <div><div class="game-score-val" id="snakeHi">000</div><div>best</div></div>
+          </div>
+          <canvas id="snakeCanvas" width="320" height="320"></canvas>
+          <div class="game-msg" id="snakeMsg">press space or tap to start</div>
+          <button class="game-btn" id="snakeReset">restart</button>
+          <p style="font-family:var(--mono);font-size:10px;color:#2a2a2a;text-align:center;letter-spacing:0.1em;">
+            ← → ↑ ↓ or WASD &nbsp;·&nbsp; mobile: swipe
+          </p>
+        </div>
+      </div>
+
+      <!-- ══ MEMORY ══════════════════════════════ -->
+      <div class="game-panel" id="panel-memory">
+        <div class="game-container fade-in">
+          <div class="game-scorebar">
+            <div><div class="game-score-val red" id="memMoves">0</div><div>moves</div></div>
+            <div><div class="game-score-val" id="memMatched">0/8</div><div>pairs</div></div>
+            <div><div class="game-score-val" id="memTime">0:00</div><div>time</div></div>
+          </div>
+          <div class="memory-grid" id="memGrid"></div>
+          <div class="game-msg" id="memMsg"></div>
+          <button class="game-btn" id="memReset">new game</button>
+        </div>
+      </div>
+
+      <!-- ══ VOID CLICKER ════════════════════════ -->
+      <div class="game-panel" id="panel-void">
+        <div class="game-container fade-in">
+          <div class="game-scorebar">
+            <div>
+              <div class="game-score-val red" id="voidCount">0</div>
+              <div>void points</div>
+            </div>
+            <div>
+              <div class="game-score-val" id="voidPerSec">0/s</div>
+              <div>per second</div>
+            </div>
+          </div>
+
+          <div class="void-layout">
+            <div class="void-btn-wrap">
+              <div class="void-orb" id="voidOrb">∅</div>
+              <div class="void-orb-label">click the void</div>
+              <div class="void-stats" id="voidStats">
+                total clicks: <span id="voidClicks">0</span><br/>
+                all-time void: <span id="voidTotal">0</span>
+              </div>
+            </div>
+            <div class="void-upgrades" id="voidUpgrades"></div>
+          </div>
+          <button class="game-btn" id="voidReset" style="margin-top:8px;">reset void</button>
+        </div>
+      </div>
+
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="footer-text">beyonddepression &nbsp;·&nbsp; <a href="../index.html">← back home</a></p>
+  </div>
+</footer>
+
+</div>
+<script src="../js/shared.js"></script>
+<script src="../js/games.js"></script>
+</body>
+</html>
