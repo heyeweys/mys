@@ -84,7 +84,8 @@ body::before {
 .marquee-track {
   display: flex;
   white-space: nowrap;
-  animation: marquee 32s linear infinite;
+  width: max-content;
+  animation: marquee 72s linear infinite;
 }
 .marquee-track span {
   font-family: var(--mono);
@@ -93,11 +94,23 @@ body::before {
   padding: 0 40px;
   letter-spacing: 0.15em;
 }
-.marquee-track span em { color: var(--accent); font-style: normal; }
+
+.marquee-track span em { 
+  color: var(--accent); 
+  font-style: normal; 
+}
+
+@media (max-width: 768px) {
+  .marquee-track {
+    animation-duration: 58s; 
+  }
+}
+
 @keyframes marquee {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
 }
+
 
 /* ── NAVIGATION ────────────────────────────────── */
 .site-nav {
@@ -140,7 +153,6 @@ body::before {
 .nav-links li a.active { color: var(--accent); }
 .nav-links li a .nav-icon { width: 13px; height: 13px; opacity: .6; }
 
-/* hamburger mobile */
 .nav-toggle {
   display: none;
   background: none;
@@ -234,7 +246,6 @@ a:hover { color: var(--accent); }
 .stagger.visible > *:nth-child(n+7) { transition-delay: .46s; }
 .stagger.visible > * { opacity: 1; transform: translateY(0); }
 
-/* ── CARD ───────────────────────────────────────── */
 .card {
   background: var(--bg3);
   border: 1px solid var(--line);
@@ -244,7 +255,6 @@ a:hover { color: var(--accent); }
 }
 .card:hover { border-color: var(--line2); }
 
-/* ── STATUS DOT ─────────────────────────────────── */
 .status-dot {
   display: inline-block;
   width: 6px; height: 6px;
@@ -259,7 +269,6 @@ a:hover { color: var(--accent); }
   50%      { opacity: .3; box-shadow: 0 0 0 4px transparent; }
 }
 
-/* ── FOOTER ─────────────────────────────────────── */
 .site-footer {
   border-top: 1px solid var(--line);
   padding: 40px 0;
@@ -275,7 +284,6 @@ a:hover { color: var(--accent); }
 .footer-text a { color: #333; text-decoration: underline; text-underline-offset: 3px; }
 .footer-text a:hover { color: var(--accent); }
 
-/* ── PAGE HEADER (inner pages) ──────────────────── */
 .page-header {
   padding: 56px 0 48px;
 }
@@ -302,7 +310,6 @@ a:hover { color: var(--accent); }
   letter-spacing: 0.1em;
 }
 
-/* ── KV TABLE ───────────────────────────────────── */
 .kv-table {
   width: 100%;
   border-collapse: collapse;
@@ -323,7 +330,6 @@ a:hover { color: var(--accent); }
 .val-loading { color: var(--muted) !important; font-style: italic; animation: blink .9s step-end infinite; }
 @keyframes blink { 50% { opacity: 0; } }
 
-/* ── GLITCH ─────────────────────────────────────── */
 .glitch { position: relative; display: inline-block; }
 .glitch:hover::before, .glitch:hover::after {
   content: attr(data-text);
@@ -348,14 +354,12 @@ a:hover { color: var(--accent); }
 @keyframes g1 { 0%,100%{transform:translateX(-3px)} 50%{transform:translateX(3px)} }
 @keyframes g2 { 0%,100%{transform:translateX(3px)}  50%{transform:translateX(-3px)} }
 
-/* ── CURSOR BLINK ───────────────────────────────── */
 .cursor::after {
   content: '_';
   animation: blink 1s step-end infinite;
   color: var(--accent);
 }
 
-/* ── TAGS ───────────────────────────────────────── */
 .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
 .tag {
   font-family: var(--mono);
@@ -369,7 +373,6 @@ a:hover { color: var(--accent); }
 }
 .tag:hover { border-color: var(--accent2); color: var(--text); }
 
-/* ── RESPONSIVE ─────────────────────────────────── */
 @media (max-width: 600px) {
   section { padding: 48px 0; }
   .page-header { padding: 40px 0 32px; }
