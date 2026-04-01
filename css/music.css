@@ -1,6 +1,6 @@
 .music-layout {
   display: grid;
-  grid-template-columns: 300px 1fr; 
+  grid-template-columns: 300px 1fr;
   gap: 40px;
   align-items: start;
 }
@@ -16,6 +16,17 @@
     margin-bottom: 10px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
   }
+}
+
+/* ── Custom volume drag cursor ───────────────────────── */
+/*
+  SVG cursor: two red arrows pointing left/right with a small circle centre.
+  The hotspot (12 12) sits at the circle so it aligns with the drag thumb.
+  Fallback to ew-resize for browsers that don't support SVG cursors.
+*/
+.vol-cursor-active,
+.vol-cursor-active * {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3C!-- left arrow --%3E%3Cpolygon points='2,14 8,9 8,12 12,12 12,16 8,16 8,19' fill='%23e60000'/%3E%3C!-- centre circle --%3E%3Ccircle cx='14' cy='14' r='3' fill='%23e60000'/%3E%3C!-- right arrow --%3E%3Cpolygon points='26,14 20,9 20,12 16,12 16,16 20,16 20,19' fill='%23e60000'/%3E%3C/svg%3E") 14 14, ew-resize !important;
 }
 
 /* ── Player card ─────────────────────────────────────── */
@@ -72,6 +83,8 @@
   overflow: hidden;
   white-space: nowrap;
   margin-bottom: 4px;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
 }
 .mp-track-inner {
   display: inline-block;
@@ -80,10 +93,12 @@
   font-weight: 600;
   letter-spacing: 0.02em;
 }
-.mp-track-inner.scrolling { animation: mp-scroll 12s linear infinite; }
+.mp-track-inner.scrolling {
+  animation: mp-scroll 14s linear infinite;
+}
 @keyframes mp-scroll {
-  0%,  20% { transform: translateX(0); }
-  80%, 100% { transform: translateX(-50%); }
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 /* ── Artist ──────────────────────────────────────────── */
@@ -182,11 +197,12 @@
 }
 @media (hover: none) {
   .mp-btn-play:active {
-    background: var(--text); /* stays white — no persistent red */
+    background: var(--text);
     transform: scale(0.95);
   }
 }
 
+/* ── Volume ──────────────────────────────────────────── */
 .mp-vol-container {
   background: var(--bg2);
   border: 1px solid var(--line);
@@ -209,7 +225,8 @@
   height: 4px;
   background: var(--line2);
   border-radius: 4px;
-  cursor: col-resize;
+  /* Default cursor on the track itself */
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpolygon points='2,14 8,9 8,12 12,12 12,16 8,16 8,19' fill='%23e60000' opacity='0.6'/%3E%3Ccircle cx='14' cy='14' r='3' fill='%23e60000' opacity='0.6'/%3E%3Cpolygon points='26,14 20,9 20,12 16,12 16,16 20,16 20,19' fill='%23e60000' opacity='0.6'/%3E%3C/svg%3E") 14 14, ew-resize;
   position: relative;
   transition: height .15s ease;
 }
@@ -220,7 +237,7 @@
   height: 100%;
   background: var(--text);
   border-radius: 4px;
-  width: 80%; /* visual default; overridden by JS on load */
+  width: 80%;
   transition: background .2s;
   pointer-events: none;
 }
@@ -230,6 +247,7 @@
   box-shadow: 0 0 6px var(--accent);
 }
 
+/* ── Playlist panel ──────────────────────────────────── */
 .playlist-panel {
   background: var(--bg3);
   border: 1px solid var(--line);
@@ -258,33 +276,41 @@
 }
 
 /* ── Scrollable track list ────────────────────────────── */
-/* Wrapper provides the bottom fade-out "more tracks" hint */
-.pl-items-wrap { position: relative; }
+.pl-items-wrap {
+  position: relative;
+}
 .pl-items-wrap::after {
   content: '';
   position: absolute;
   bottom: 0; left: 0; right: 0;
-  height: 36px;
+  height: 48px;
   background: linear-gradient(to bottom, transparent, var(--bg3));
   pointer-events: none;
   border-radius: 0 0 8px 8px;
+  z-index: 1;
 }
 
 .pl-items {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  max-height: 440px;
-  overflow-y: auto;
-  padding-right: 4px;
-  padding-bottom: 8px; /* so last item isn't hidden behind the fade */
+  max-height: 480px;
+  overflow-y: scroll;   
+  padding-right: 6px;
+  padding-bottom: 40px; 
   scrollbar-width: thin;
   scrollbar-color: var(--line2) transparent;
+  /* Momentum scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
 }
 .pl-items::-webkit-scrollbar          { width: 3px; }
 .pl-items::-webkit-scrollbar-track    { background: transparent; }
-.pl-items::-webkit-scrollbar-thumb    { background: var(--line2); border-radius: 3px; }
-.pl-items::-webkit-scrollbar-thumb:hover { background: var(--accent2); }
+.pl-items::-webkit-scrollbar-thumb    {
+  background: var(--accent);
+  border-radius: 3px;
+  opacity: 0.5;
+}
+.pl-items::-webkit-scrollbar-thumb:hover { background: var(--accent); opacity: 1; }
 
 .pl-item {
   display: flex;
@@ -296,6 +322,7 @@
   transition: background .18s, border-color .18s, box-shadow .18s;
   border: 1px solid transparent;
   border-left: 3px solid transparent;
+  flex-shrink: 0;
 }
 .pl-item:hover {
   background: var(--bg2);
@@ -342,13 +369,14 @@
   color: var(--dim);
 }
 
+/* ── Genre / tags ────────────────────────────────────── */
 .genre-section { margin-top: 28px; }
 
 .genre-section .tag-list {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 0; 
+  margin-top: 0;
 }
 .genre-section .tag {
   font-family: var(--mono);

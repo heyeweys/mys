@@ -2,21 +2,36 @@
 
 /* ── VARIABLES ─────────────────────────────────── */
 :root {
-  --bg:      #000000;
-  --bg2:     #080808;
-  --bg3:     #0d0d0d;
-  --bg4:     #111111;
-  --text:    #f5f5f5;
-  --muted:   #888;
-  --dim:     #444;
+  /* Backgrounds — wider contrast steps so layers actually read */
+  --bg:      #060606;
+  --bg2:     #0e0e0e;
+  --bg3:     #161616;
+  --bg4:     #202020;
+
+  /* Text */
+  --text:    #f0eeee;
+  --muted:   #8a8484;
+  --dim:     #404040;
+
+  /* Accents */
   --accent:  #e60000;
-  --accent2: #666;
-  --line:    #1e1e1e;
-  --line2:   #2a2a2a;
+  --accent2: #5c5c5c;
+  --accent-glow: rgba(230, 0, 0, 0.12);
+
+  /* Borders */
+  --line:    #202020;
+  --line2:   #2e2e2e;
+
+  /* Fonts */
   --mono:    'Share Tech Mono', monospace;
   --serif:   'Noto Serif JP', serif;
   --sans:    'Noto Sans JP', sans-serif;
   --radius:  10px;
+
+  /* Shadows */
+  --shadow-sm:  0 2px 8px rgba(0,0,0,0.5);
+  --shadow-md:  0 4px 20px rgba(0,0,0,0.6), 0 1px 4px rgba(0,0,0,0.4);
+  --shadow-lg:  0 8px 40px rgba(0,0,0,0.7), 0 2px 8px rgba(0,0,0,0.5);
 }
 
 /* ── BASE ──────────────────────────────────────── */
@@ -30,12 +45,15 @@ body {
   font-size: 14px;
   line-height: 1.8;
   min-height: 100vh;
+  /* Subtle ambient warmth at the top */
+  background-image:
+    radial-gradient(ellipse 80% 40% at 50% -10%, rgba(230,0,0,0.04) 0%, transparent 70%);
 }
 
 /* ── SCROLLBAR ─────────────────────────────────── */
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--line2); }
+::-webkit-scrollbar-thumb { background: var(--line2); border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent2); }
 
 /* ── SELECTION ─────────────────────────────────── */
@@ -49,7 +67,7 @@ body::before {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 9999;
-  opacity: .4;
+  opacity: .45;
 }
 
 /* ── RAIN CANVAS ───────────────────────────────── */
@@ -59,11 +77,12 @@ body::before {
   width: 100%; height: 100%;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.022;
+  opacity: 0.025;
 }
 
 .content-layer { position: relative; z-index: 1; }
 
+/* ── LAYOUT ────────────────────────────────────── */
 .container {
   max-width: 800px;
   margin: 0 auto;
@@ -75,11 +94,13 @@ body::before {
   padding: 0 24px;
 }
 
+/* ── MARQUEE ───────────────────────────────────── */
 .marquee-wrap {
   overflow: hidden;
   border-bottom: 1px solid var(--line);
-  padding: 8px 0;
-  background: var(--bg);
+  padding: 9px 0;
+  background: var(--bg2);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.02);
 }
 .marquee-track {
   display: flex;
@@ -94,16 +115,13 @@ body::before {
   padding: 0 40px;
   letter-spacing: 0.15em;
 }
-
-.marquee-track span em { 
-  color: var(--accent); 
-  font-style: normal; 
+.marquee-track span em {
+  color: var(--accent);
+  font-style: normal;
 }
 
 @media (max-width: 768px) {
-  .marquee-track {
-    animation-duration: 58s; 
-  }
+  .marquee-track { animation-duration: 58s; }
 }
 
 @keyframes marquee {
@@ -111,15 +129,17 @@ body::before {
   to   { transform: translateX(-50%); }
 }
 
-
 /* ── NAVIGATION ────────────────────────────────── */
 .site-nav {
   border-bottom: 1px solid var(--line);
-  background: var(--bg);
+  /* Slightly lighter than body so it visually separates */
+  background: rgba(14, 14, 14, 0.92);
   position: sticky;
   top: 0;
   z-index: 100;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 1px 0 var(--line), 0 4px 16px rgba(0,0,0,0.4);
 }
 .nav-inner {
   max-width: 800px;
@@ -149,7 +169,10 @@ body::before {
   align-items: center;
   gap: 6px;
 }
-.nav-links li a:hover { color: var(--text); background: var(--line); }
+.nav-links li a:hover {
+  color: var(--text);
+  background: var(--bg3);
+}
 .nav-links li a.active { color: var(--accent); }
 .nav-links li a .nav-icon { width: 13px; height: 13px; opacity: .6; }
 
@@ -167,6 +190,7 @@ body::before {
   flex-direction: column;
   border-top: 1px solid var(--line);
   padding: 8px 0;
+  background: var(--bg2);
 }
 .nav-mobile a {
   font-family: var(--mono);
@@ -176,9 +200,13 @@ body::before {
   letter-spacing: 0.15em;
   padding: 10px 24px;
   border-bottom: 1px solid var(--line);
-  transition: color .2s;
+  transition: color .2s, background .2s;
 }
-.nav-mobile a:hover, .nav-mobile a.active { color: var(--accent); }
+.nav-mobile a:hover,
+.nav-mobile a.active {
+  color: var(--accent);
+  background: rgba(230,0,0,0.04);
+}
 .nav-mobile.open { display: flex; }
 
 @media (max-width: 640px) {
@@ -186,14 +214,21 @@ body::before {
   .nav-toggle { display: block; }
 }
 
-/* ── SECTION ────────────────────────────────────── */
+/* ── SECTIONS ───────────────────────────────────── */
 section {
   border-top: 1px solid var(--line);
   padding: 64px 0;
+  /* Subtle alternating depth — odd sections breathe from the bg */
 }
 section:first-of-type { border-top: none; }
 
-/* ── SECTION HEADER ─────────────────────────────── */
+/* Every other section gets a barely-perceptible tinted background
+   so the page doesn't feel like one flat wall */
+section:nth-of-type(even) {
+  background: linear-gradient(180deg, rgba(22,22,22,0.5) 0%, transparent 100%);
+}
+
+/* ── SECTION LABEL ──────────────────────────────── */
 .sec-label {
   font-family: var(--mono);
   font-size: 10px;
@@ -212,6 +247,7 @@ section:first-of-type { border-top: none; }
   height: 1px;
   background: var(--accent);
   flex-shrink: 0;
+  box-shadow: 0 0 6px var(--accent);
 }
 
 /* ── TYPOGRAPHY ─────────────────────────────────── */
@@ -223,7 +259,7 @@ h1, h2, h3 {
 a { color: var(--text); text-decoration: none; }
 a:hover { color: var(--accent); }
 
-/* ── FADE-IN ON SCROLL ──────────────────────────── */
+/* ── FADE-IN ────────────────────────────────────── */
 .fade-in {
   opacity: 0;
   transform: translateY(16px);
@@ -246,15 +282,26 @@ a:hover { color: var(--accent); }
 .stagger.visible > *:nth-child(n+7) { transition-delay: .46s; }
 .stagger.visible > * { opacity: 1; transform: translateY(0); }
 
+/* ── CARD ───────────────────────────────────────── */
 .card {
   background: var(--bg3);
-  border: 1px solid var(--line);
+  /* Top edge highlight — gives the card a "lifted" look */
+  border: 1px solid var(--line2);
+  border-top-color: var(--line2);
   border-radius: var(--radius);
   padding: 24px;
-  transition: border-color .25s;
+  box-shadow: var(--shadow-md);
+  /* Interior gradient — faint lighter top */
+  background-image: linear-gradient(160deg, rgba(255,255,255,0.025) 0%, transparent 50%);
+  transition: border-color .25s, box-shadow .25s, transform .2s;
 }
-.card:hover { border-color: var(--line2); }
+.card:hover {
+  border-color: #363636;
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-1px);
+}
 
+/* ── STATUS DOT ─────────────────────────────────── */
 .status-dot {
   display: inline-block;
   width: 6px; height: 6px;
@@ -265,25 +312,28 @@ a:hover { color: var(--accent); }
   margin-right: 6px;
 }
 @keyframes pulse-dot {
-  0%,100% { opacity: 1; box-shadow: 0 0 0 0 #e6000055; }
-  50%      { opacity: .3; box-shadow: 0 0 0 4px transparent; }
+  0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(230,0,0,0.6); }
+  50%      { opacity: .5; box-shadow: 0 0 0 5px transparent; }
 }
 
+/* ── FOOTER ─────────────────────────────────────── */
 .site-footer {
   border-top: 1px solid var(--line);
   padding: 40px 0;
   text-align: center;
+  background: var(--bg2);
 }
 .footer-text {
   font-family: var(--mono);
   font-size: 10px;
-  color: #2a2a2a;
+  color: #303030;
   letter-spacing: 0.2em;
   line-height: 2.2;
 }
-.footer-text a { color: #333; text-decoration: underline; text-underline-offset: 3px; }
+.footer-text a { color: #3e3e3e; text-decoration: underline; text-underline-offset: 3px; }
 .footer-text a:hover { color: var(--accent); }
 
+/* ── PAGE HEADER ────────────────────────────────── */
 .page-header {
   padding: 56px 0 48px;
 }
@@ -310,6 +360,7 @@ a:hover { color: var(--accent); }
   letter-spacing: 0.1em;
 }
 
+/* ── KV TABLE ───────────────────────────────────── */
 .kv-table {
   width: 100%;
   border-collapse: collapse;
@@ -327,11 +378,17 @@ a:hover { color: var(--accent); }
 .kv-table td:last-child { color: var(--text); }
 .val-red { color: var(--accent) !important; font-family: var(--mono); }
 .val-muted { color: var(--dim) !important; font-style: italic; }
-.val-loading { color: var(--muted) !important; font-style: italic; animation: blink .9s step-end infinite; }
+.val-loading {
+  color: var(--muted) !important;
+  font-style: italic;
+  animation: blink .9s step-end infinite;
+}
 @keyframes blink { 50% { opacity: 0; } }
 
+/* ── GLITCH ─────────────────────────────────────── */
 .glitch { position: relative; display: inline-block; }
-.glitch:hover::before, .glitch:hover::after {
+.glitch:hover::before,
+.glitch:hover::after {
   content: attr(data-text);
   position: absolute;
   top: 0; left: 0;
@@ -354,12 +411,14 @@ a:hover { color: var(--accent); }
 @keyframes g1 { 0%,100%{transform:translateX(-3px)} 50%{transform:translateX(3px)} }
 @keyframes g2 { 0%,100%{transform:translateX(3px)}  50%{transform:translateX(-3px)} }
 
+/* ── CURSOR BLINK ───────────────────────────────── */
 .cursor::after {
   content: '_';
   animation: blink 1s step-end infinite;
   color: var(--accent);
 }
 
+/* ── TAGS ───────────────────────────────────────── */
 .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
 .tag {
   font-family: var(--mono);
@@ -369,25 +428,34 @@ a:hover { color: var(--accent); }
   padding: 3px 9px;
   border-radius: 3px;
   letter-spacing: 0.08em;
-  transition: border-color .2s, color .2s;
+  transition: border-color .2s, color .2s, background .2s;
 }
-.tag:hover { border-color: var(--accent2); color: var(--text); }
+.tag:hover {
+  border-color: var(--accent2);
+  color: var(--text);
+  background: rgba(255,255,255,0.03);
+  animation: mini-glitch 0.2s linear infinite;
+}
 
-@media (max-width: 600px) {
-  section { padding: 48px 0; }
-  .page-header { padding: 40px 0 32px; }
+@keyframes mini-glitch {
+  0%   { text-shadow: -1px 0 #fff, 1px 0 #e60000; }
+  50%  { text-shadow: 1px 0 #fff, -1px 0 #e60000; }
+  100% { text-shadow: 0 0 0 transparent; }
 }
+
+/* ── ABOUT QUOTE ────────────────────────────────── */
 .about-quote {
   margin: 24px 0;
-  padding: 16px 20px;
+  padding: 18px 20px;
   background: var(--bg2);
+  /* Two-tone left border: top half accent, fades to line */
   border: 1px solid var(--line2);
+  border-left: 2px solid var(--accent);
   border-radius: 4px;
   position: relative;
-  transition: border-color 0.3s, background 0.3s, transform 0.3s;
+  box-shadow: var(--shadow-sm), inset 0 0 20px rgba(230,0,0,0.03);
+  transition: border-color .3s, box-shadow .3s;
 }
-
-
 .about-quote::before {
   content: '✦';
   font-family: var(--mono);
@@ -395,34 +463,31 @@ a:hover { color: var(--accent); }
   color: var(--accent);
   position: absolute;
   top: -10px;
-  left: 10px;
-  background: var(--bg);
+  left: 14px;
+  background: var(--bg2);
   padding: 0 5px;
-  opacity: 0.6;
+  opacity: 0.7;
+  text-shadow: 0 0 8px var(--accent);
 }
-
 .about-quote p {
   color: var(--muted);
   font-size: 13px;
   line-height: 1.6;
   margin: 0 !important;
   font-style: italic;
-  transition: color 0.3s;
+  transition: color .3s;
 }
-
-.about-quote:hover p {
-  color: var(--text);
+.about-quote:hover {
+  border-left-color: var(--accent);
+  box-shadow: var(--shadow-md), inset 0 0 30px rgba(230,0,0,0.05);
 }
+.about-quote:hover p { color: var(--text); }
 
+/* ── UTILITY VALUES ─────────────────────────────── */
 .val-viperr { color: #aa0000 !important; }
 
-.tag:hover {
-  animation: mini-glitch 0.2s linear infinite;
+/* ── RESPONSIVE ─────────────────────────────────── */
+@media (max-width: 600px) {
+  section { padding: 48px 0; }
+  .page-header { padding: 40px 0 32px; }
 }
-
-@keyframes mini-glitch {
-  0% { text-shadow: -1px 0 #fff, 1px 0 #e60000; }
-  50% { text-shadow: 1px 0 #fff, -1px 0 #e60000; }
-  100% { text-shadow: 0 0 0 transparent; }
-}
-

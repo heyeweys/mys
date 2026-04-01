@@ -15,14 +15,16 @@ const btnPlay  = document.getElementById('btnPlay');
 
 /* ── State ───────────────────────────────────────────── */
 let currentTracks   = [];
-let trackIndexMap   = []; // display index → real SC widget index (post-filter)
+let trackIndexMap   = [];
 let currentIdx      = 0;
 let isShuffle       = false;
 let currentDuration = 0;
-let userVolume      = 0.8; // matches the CSS .mp-vol-fill default width: 80%
+let userVolume      = 0.8;
 
 let isDraggingProgress = false;
 let isDraggingVolume   = false;
+let lastDirection      = 1;
+let skipGuard          = 0;
 
 /* ── Helpers ─────────────────────────────────────────── */
 const fmtMS = ms => {
@@ -31,21 +33,18 @@ const fmtMS = ms => {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 };
 
-// Returns the real SC widget index for a given display index
 const widgetIdx = di => trackIndexMap[di] ?? di;
 
 function shufflePlay() {
-  if (currentTracks.length) widget.skip(widgetIdx(Math.floor(Math.random() * currentTracks.length)));
+  if (!currentTracks.length) return;
+  lastDirection = 1;
+  widget.skip(widgetIdx(Math.floor(Math.random() * currentTracks.length)));
 }
 
 /* ── Build playlist ──────────────────────────────────── */
-// Filters out tracks with no/blank title or literal "Unknown" —
-// these are deleted/private/repost-placeholder objects SC sometimes
-// injects into a set. trackIndexMap lets us always call widget.skip()
-// with the correct raw SC index even after filtering.
 function buildList(sounds) {
   trackIndexMap = [];
-  const valid = [];
+  const valid   = [];
 
   sounds.forEach((t, i) => {
     const title = (t.title || '').trim();
@@ -70,19 +69,38 @@ function buildList(sounds) {
   `).join('');
 }
 
+function loadSoundsWithRetry(attempt = 0, prevCount = -1) {
+  widget.getSounds(sounds => {
+    const count = sounds.length;
+    if (count !== prevCount && attempt < 25) {
+      if (count > 0) buildList(sounds);
+      const delay = attempt < 5 ? 300 : attempt < 12 ? 500 : 800;
+      setTimeout(() => loadSoundsWithRetry(attempt + 1, count), delay);
+      return;
+    }
+    buildList(sounds);
+    widget.getCurrentSound(sound => updatePlayerUI(sound || currentTracks[0]));
+    widget.setVolume(userVolume * 100);
+    vFill.style.width = `${userVolume * 100}%`;
+  });
+}
+
 /* ── Update player UI ────────────────────────────────── */
 function updatePlayerUI(sound) {
   if (!sound) return;
 
-  trackEl.textContent  = sound.title || '—';
-  artistEl.textContent = sound.user ? sound.user.username : '—';
+  const title = sound.title || '—';
 
-  // Restart scroll animation on title change
   trackEl.classList.remove('scrolling');
-  void trackEl.offsetWidth; // force reflow
+  trackEl.textContent = title;
+  void trackEl.offsetWidth;
+
   if (trackEl.scrollWidth > trackEl.parentElement.clientWidth + 4) {
+    trackEl.textContent = title + '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0' + title;
     trackEl.classList.add('scrolling');
   }
+
+  artistEl.textContent = sound.user ? sound.user.username : '—';
 
   currentDuration   = sound.duration || 0;
   durEl.textContent = fmtMS(currentDuration);
@@ -106,7 +124,7 @@ function setPlayIcon(playing) {
   btnPlay.classList.toggle('active', playing);
 }
 
-/* ── Progress drag (mouse + touch) ──────────────────── */
+/* ── Progress drag ───────────────────────────────────── */
 function applyProgress(clientX) {
   if (!currentDuration) return;
   const r     = pBar.getBoundingClientRect();
@@ -119,7 +137,7 @@ pBar.addEventListener('mousedown', e => {
   isDraggingProgress = true;
   pBar.classList.add('dragging');
   applyProgress(e.clientX);
-  e.preventDefault(); // prevent text-selection cursor while scrubbing
+  e.preventDefault();
 });
 document.addEventListener('mousemove', e => {
   if (isDraggingProgress) applyProgress(e.clientX);
@@ -127,7 +145,6 @@ document.addEventListener('mousemove', e => {
 document.addEventListener('mouseup', () => {
   if (isDraggingProgress) { isDraggingProgress = false; pBar.classList.remove('dragging'); }
 });
-
 pBar.addEventListener('touchstart', e => {
   isDraggingProgress = true;
   pBar.classList.add('dragging');
@@ -140,7 +157,7 @@ document.addEventListener('touchend', () => {
   if (isDraggingProgress) { isDraggingProgress = false; pBar.classList.remove('dragging'); }
 });
 
-/* ── Volume drag (mouse + touch) ─────────────────────── */
+/* ── Volume drag ─────────────────────────────────────── */
 function applyVolume(clientX) {
   const r    = vSlider.getBoundingClientRect();
   userVolume = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
@@ -148,56 +165,49 @@ function applyVolume(clientX) {
   widget.setVolume(userVolume * 100);
 }
 
-vSlider.addEventListener('mousedown', e => {
+function startVolDrag(clientX) {
   isDraggingVolume = true;
   vSlider.classList.add('dragging');
-  applyVolume(e.clientX);
-  e.preventDefault();
-});
-document.addEventListener('mousemove', e => {
-  if (isDraggingVolume) applyVolume(e.clientX);
-});
-document.addEventListener('mouseup', () => {
-  if (isDraggingVolume) { isDraggingVolume = false; vSlider.classList.remove('dragging'); }
-});
+  document.body.classList.add('vol-cursor-active');
+  applyVolume(clientX);
+}
+function endVolDrag() {
+  if (!isDraggingVolume) return;
+  isDraggingVolume = false;
+  vSlider.classList.remove('dragging');
+  document.body.classList.remove('vol-cursor-active');
+}
 
-vSlider.addEventListener('touchstart', e => {
-  isDraggingVolume = true;
-  vSlider.classList.add('dragging');
-  applyVolume(e.touches[0].clientX);
-}, { passive: true });
-document.addEventListener('touchmove', e => {
-  if (isDraggingVolume) applyVolume(e.touches[0].clientX);
-}, { passive: true });
-document.addEventListener('touchend', () => {
-  if (isDraggingVolume) { isDraggingVolume = false; vSlider.classList.remove('dragging'); }
-});
+vSlider.addEventListener('mousedown', e => { startVolDrag(e.clientX); e.preventDefault(); });
+document.addEventListener('mousemove', e => { if (isDraggingVolume) applyVolume(e.clientX); });
+document.addEventListener('mouseup', endVolDrag);
+
+vSlider.addEventListener('touchstart', e => { startVolDrag(e.touches[0].clientX); }, { passive: true });
+document.addEventListener('touchmove', e => { if (isDraggingVolume) applyVolume(e.touches[0].clientX); }, { passive: true });
+document.addEventListener('touchend', endVolDrag);
 
 /* ── SoundCloud events ───────────────────────────────── */
 widget.bind(SC.Widget.Events.READY, () => {
-  widget.getSounds(sounds => {
-    buildList(sounds);
-
-    // Use widget's current sound; fall back to the first *valid* track
-    // (sounds[0] might itself be a filtered-out unknown track)
-    widget.getCurrentSound(sound => updatePlayerUI(sound || currentTracks[0]));
-
-    widget.setVolume(userVolume * 100);
-    vFill.style.width = `${userVolume * 100}%`;
-  });
+  setTimeout(() => loadSoundsWithRetry(), 150);
 });
 
 widget.bind(SC.Widget.Events.PLAY, () => {
   widget.getCurrentSoundIndex(wi => {
-    // If the widget advanced to a filtered-out (unknown) track, skip it
     if (!trackIndexMap.includes(wi)) {
-      widget.next();
+      skipGuard++;
+      if (skipGuard > 10) { skipGuard = 0; return; }
+      if (lastDirection >= 0) widget.next();
+      else widget.prev();
       return;
     }
+    skipGuard = 0;
     setPlayIcon(true);
     const di = trackIndexMap.indexOf(wi);
     currentIdx = di;
     Array.from(plItems.children).forEach((el, i) => el.classList.toggle('active', i === di));
+    // Keep active track visible in the scrollable list
+    const activeEl = plItems.children[di];
+    if (activeEl) activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     widget.getCurrentSound(updatePlayerUI);
   });
 });
@@ -206,11 +216,9 @@ widget.bind(SC.Widget.Events.PAUSE, () => setPlayIcon(false));
 
 widget.bind(SC.Widget.Events.FINISH, () => {
   if (isShuffle) shufflePlay();
-  // Otherwise the SC widget advances naturally (handled by PLAY above)
 });
 
 widget.bind(SC.Widget.Events.PLAY_PROGRESS, data => {
-  // Suppress position updates while the user is actively scrubbing
   if (!isDraggingProgress) pFill.style.width = `${data.relativePosition * 100}%`;
   timeEl.textContent = fmtMS(data.currentPosition);
 });
@@ -220,6 +228,7 @@ plItems.addEventListener('click', e => {
   const item = e.target.closest('.pl-item');
   if (!item) return;
   const di = parseInt(item.dataset.index, 10);
+  lastDirection = di >= currentIdx ? 1 : -1;
   if (currentIdx === di) { widget.seekTo(0); widget.play(); }
   else widget.skip(widgetIdx(di));
 });
@@ -236,11 +245,14 @@ btnPlay.addEventListener('click', () => {
   if (!touchHandled) widget.toggle();
 });
 
-document.getElementById('btnPrev').addEventListener('click', () => widget.prev());
+document.getElementById('btnPrev').addEventListener('click', () => {
+  lastDirection = -1;
+  widget.prev();
+});
 
 document.getElementById('btnNext').addEventListener('click', () => {
   if (isShuffle) shufflePlay();
-  else widget.next();
+  else { lastDirection = 1; widget.next(); }
 });
 
 document.getElementById('btnShuffle').addEventListener('click', function () {
