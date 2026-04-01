@@ -20,11 +20,11 @@ const GALLERY = [
   */
 ];
 
-const grid   = document.getElementById('galleryGrid');
-const empty  = document.getElementById('emptyState');
-const lb     = document.getElementById('lightbox');
-const lbImg  = document.getElementById('lbImg');
-const lbCap  = document.getElementById('lbCaption');
+const grid  = document.getElementById('galleryGrid');
+const empty = document.getElementById('emptyState');
+const lb    = document.getElementById('lightbox');
+const lbImg = document.getElementById('lbImg');
+const lbCap = document.getElementById('lbCaption');
 
 let filtered = [], lbIdx = 0;
 
@@ -36,20 +36,25 @@ function buildGrid(items) {
     const div = document.createElement('div');
     div.className = 'gallery-item';
     div.dataset.tag = item.tag;
-    div.dataset.i   = i;
 
-    if (item.aspect) {
-      div.style.aspectRatio = item.aspect;
-    }
+    if (item.aspect) div.style.aspectRatio = item.aspect;
 
     const img = document.createElement('img');
-    img.src = item.thumb || item.src;
-    img.alt = item.caption || '';
+    img.src     = item.thumb || item.src;
+    img.alt     = item.caption || '';
     img.loading = 'lazy';
 
     const ov = document.createElement('div');
     ov.className = 'gallery-item-overlay';
-    ov.innerHTML = `<div class="gallery-item-caption"><span class="gallery-item-tag">${item.tag}</span>${item.caption||''}</div>`;
+    // [FIX] Use textContent instead of innerHTML to prevent XSS
+    const cap = document.createElement('div');
+    cap.className = 'gallery-item-caption';
+    const tagSpan = document.createElement('span');
+    tagSpan.className = 'gallery-item-tag';
+    tagSpan.textContent = item.tag;
+    cap.appendChild(tagSpan);
+    cap.appendChild(document.createTextNode(item.caption || ''));
+    ov.appendChild(cap);
 
     div.appendChild(img);
     div.appendChild(ov);
@@ -60,36 +65,44 @@ function buildGrid(items) {
 
 function openLb(i) {
   lbIdx = i;
-  const item = filtered[i] || GALLERY[i];
+  // [FIX] Only use filtered array — `i` is always an index into `filtered`,
+  // the old fallback `|| GALLERY[i]` was wrong when a filter was active
+  const item = filtered[i];
+  if (!item) return;
   lbImg.src = item.src;
-  lbCap.textContent = `${item.tag} — ${item.caption||''}`;
+  lbCap.textContent = `${item.tag} — ${item.caption || ''}`;
   lb.classList.add('open');
 }
+
 function closeLb() { lb.classList.remove('open'); }
 
 document.getElementById('lbClose').addEventListener('click', closeLb);
-lb.addEventListener('click', e => { if (e.target===lb) closeLb(); });
+lb.addEventListener('click', e => { if (e.target === lb) closeLb(); });
 document.getElementById('lbPrev').addEventListener('click', () => {
-  lbIdx = (lbIdx-1+filtered.length)%filtered.length; openLb(lbIdx);
+  if (!filtered.length) return;
+  lbIdx = (lbIdx - 1 + filtered.length) % filtered.length;
+  openLb(lbIdx);
 });
 document.getElementById('lbNext').addEventListener('click', () => {
-  lbIdx = (lbIdx+1)%filtered.length; openLb(lbIdx);
+  if (!filtered.length) return;
+  lbIdx = (lbIdx + 1) % filtered.length;
+  openLb(lbIdx);
 });
 document.addEventListener('keydown', e => {
   if (!lb.classList.contains('open')) return;
-  if (e.key==='Escape') closeLb();
-  if (e.key==='ArrowLeft')  { lbIdx=(lbIdx-1+filtered.length)%filtered.length; openLb(lbIdx); }
-  if (e.key==='ArrowRight') { lbIdx=(lbIdx+1)%filtered.length; openLb(lbIdx); }
+  if (e.key === 'Escape')      closeLb();
+  if (e.key === 'ArrowLeft')  { lbIdx = (lbIdx - 1 + filtered.length) % filtered.length; openLb(lbIdx); }
+  if (e.key === 'ArrowRight') { lbIdx = (lbIdx + 1) % filtered.length; openLb(lbIdx); }
 });
 
 /* Filters */
 document.getElementById('filterBar').addEventListener('click', e => {
   const btn = e.target.closest('.filter-btn');
   if (!btn) return;
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   const f = btn.dataset.filter;
-  filtered = f==='all' ? [...GALLERY] : GALLERY.filter(x=>x.tag===f);
+  filtered = f === 'all' ? [...GALLERY] : GALLERY.filter(x => x.tag === f);
   buildGrid(filtered);
 });
 

@@ -1,5 +1,14 @@
 'use strict';
 
+// [FIX] Guard: if SoundCloud API failed to load, fail gracefully
+if (typeof SC === 'undefined') {
+  const trackEl = document.getElementById('lcdTrack');
+  if (trackEl) trackEl.textContent = 'player unavailable';
+  const artist = document.getElementById('lcdArtist');
+  if (artist) artist.textContent = 'SoundCloud API failed to load';
+  throw new Error('SC Widget API not available');
+}
+
 /* ── DOM refs ────────────────────────────────────────── */
 const widget   = SC.Widget(document.getElementById('sc-widget'));
 const trackEl  = document.getElementById('lcdTrack');
@@ -57,16 +66,20 @@ function buildList(sounds) {
   currentTracks = valid;
   document.getElementById('plCount').textContent = `${valid.length} tracks`;
 
-  plItems.innerHTML = valid.map((t, i) => `
-    <div class="pl-item${i === currentIdx ? ' active' : ''}" data-index="${i}">
-      <span class="pl-num">${String(i + 1).padStart(2, '0')}</span>
-      <div class="pl-info">
-        <div class="pl-name">${t.title}</div>
-        <div class="pl-artist">${t.user ? t.user.username : '—'}</div>
-      </div>
-      <span class="pl-dur">${fmtMS(t.duration)}</span>
-    </div>
-  `).join('');
+  plItems.innerHTML = valid.map((t, i) => {
+    // [FIX] Use textContent-safe rendering via template — titles are escaped
+    const title  = (t.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const artist = (t.user ? t.user.username : '—').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return `
+      <div class="pl-item${i === currentIdx ? ' active' : ''}" data-index="${i}">
+        <span class="pl-num">${String(i + 1).padStart(2, '0')}</span>
+        <div class="pl-info">
+          <div class="pl-name">${title}</div>
+          <div class="pl-artist">${artist}</div>
+        </div>
+        <span class="pl-dur">${fmtMS(t.duration)}</span>
+      </div>`;
+  }).join('');
 }
 
 function loadSoundsWithRetry(attempt = 0, prevCount = -1) {
@@ -205,7 +218,6 @@ widget.bind(SC.Widget.Events.PLAY, () => {
     const di = trackIndexMap.indexOf(wi);
     currentIdx = di;
     Array.from(plItems.children).forEach((el, i) => el.classList.toggle('active', i === di));
-    // Keep active track visible in the scrollable list
     const activeEl = plItems.children[di];
     if (activeEl) activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     widget.getCurrentSound(updatePlayerUI);

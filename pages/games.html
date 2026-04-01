@@ -9,13 +9,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;400&family=Noto+Sans+JP:wght@300;400&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="../css/base.css"/>
   <link rel="stylesheet" href="../css/games.css"/>
- 
 </head>
 <body>
 <canvas class="rain-canvas" id="rainCanvas"></canvas>
 <div class="content-layer">
 
-<!-- NAV -->
 <nav class="site-nav">
   <div class="nav-inner">
     <ul class="nav-links">
@@ -52,6 +50,8 @@
       <div class="games-selector fade-in">
         <button class="game-tab active" data-game="snake">snake</button>
         <button class="game-tab" data-game="memory">memory</button>
+        <button class="game-tab" data-game="breakout">breakout</button>
+        <button class="game-tab" data-game="2048">2048</button>
         <button class="game-tab" data-game="void">void_clicker</button>
       </div>
 
@@ -65,9 +65,7 @@
           <canvas id="snakeCanvas" width="320" height="320"></canvas>
           <div class="game-msg" id="snakeMsg">press space or tap to start</div>
           <button class="game-btn" id="snakeReset">restart</button>
-          <p style="font-family:var(--mono);font-size:10px;color:#2a2a2a;text-align:center;letter-spacing:0.1em;">
-            ← → ↑ ↓ or WASD &nbsp;·&nbsp; mobile: swipe
-          </p>
+          <p class="game-hint">← → ↑ ↓ or WASD &nbsp;·&nbsp; mobile: swipe</p>
         </div>
       </div>
 
@@ -82,6 +80,38 @@
           <div class="memory-grid" id="memGrid"></div>
           <div class="game-msg" id="memMsg"></div>
           <button class="game-btn" id="memReset">new game</button>
+        </div>
+      </div>
+
+      <!-- ══ BREAKOUT ════════════════════════════ -->
+      <div class="game-panel" id="panel-breakout">
+        <div class="game-container fade-in">
+          <div class="game-scorebar">
+            <div><div class="game-score-val red" id="brkScore">0</div><div>score</div></div>
+            <div><div class="game-score-val" id="brkHi">0</div><div>best</div></div>
+            <div><div class="game-score-val" id="brkLives">♥♥♥</div><div>lives</div></div>
+            <div><div class="game-score-val" id="brkLevel">1</div><div>level</div></div>
+          </div>
+          <canvas id="breakoutCanvas" width="480" height="300"></canvas>
+          <div class="game-msg" id="brkMsg">press space or tap to start</div>
+          <button class="game-btn" id="brkReset">restart</button>
+          <p class="game-hint">← → or A/D to move &nbsp;·&nbsp; mouse / touch also works</p>
+        </div>
+      </div>
+
+      <!-- ══ 2048 ════════════════════════════════ -->
+      <div class="game-panel" id="panel-2048">
+        <div class="game-container fade-in">
+          <div class="game-scorebar">
+            <div><div class="game-score-val red" id="g2048Score">0</div><div>score</div></div>
+            <div><div class="game-score-val" id="g2048Best">0</div><div>best</div></div>
+          </div>
+          <div class="g2048-board">
+            <div class="g2048-grid" id="g2048Grid"></div>
+          </div>
+          <div class="game-msg" id="g2048Msg"></div>
+          <button class="game-btn" id="g2048Reset">new game</button>
+          <p class="game-hint">← → ↑ ↓ &nbsp;·&nbsp; swipe on mobile</p>
         </div>
       </div>
 
