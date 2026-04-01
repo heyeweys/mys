@@ -47,35 +47,3 @@ const SOCIALS = [
     });
   });
 })();
-
-/* ── GUESTBOOK MODAL ─────────────── */
-(function guestbook() {
-  const modal   = document.getElementById('guestbook-modal');
-  const openBtn = document.getElementById('openGuestbook');
-  const closeBtn= document.getElementById('closeGuest');
-  const submitBtn = document.getElementById('gbSubmit');
-  const status  = document.getElementById('gbStatus');
-
-  if (!modal) return;
-
-  function show() { modal.style.display = 'flex'; }
-  function hide() { modal.style.display = 'none'; }
-
-  openBtn && openBtn.addEventListener('click', e => { e.preventDefault(); show(); });
-  closeBtn && closeBtn.addEventListener('click', hide);
-  modal.addEventListener('click', e => { if (e.target === modal) hide(); });
-
-  submitBtn && submitBtn.addEventListener('click', () => {
-    const name = document.getElementById('gbName').value.trim();
-    const msg  = document.getElementById('gbMsg').value.trim();
-    if (!msg) { status.textContent = 'say something first.'; return; }
-    // Store locally (no backend)
-    const entries = JSON.parse(localStorage.getItem('gb_entries') || '[]');
-    entries.push({ name: name || 'anon', msg, date: new Date().toLocaleDateString() });
-    localStorage.setItem('gb_entries', JSON.stringify(entries));
-    status.textContent = 'noted. thank you.';
-    document.getElementById('gbName').value = '';
-    document.getElementById('gbMsg').value  = '';
-    setTimeout(hide, 1500);
-  });
-})();

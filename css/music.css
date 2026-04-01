@@ -16,14 +16,18 @@
     margin-bottom: 10px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
   }
+  .pl-items {
+    max-height: 55vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+  }
+  .pl-items-wrap {
+    overflow: visible;
+  }
 }
 
-/* ── Custom volume drag cursor ───────────────────────── */
-/*
-  SVG cursor: two red arrows pointing left/right with a small circle centre.
-  The hotspot (12 12) sits at the circle so it aligns with the drag thumb.
-  Fallback to ew-resize for browsers that don't support SVG cursors.
-*/
 .vol-cursor-active,
 .vol-cursor-active * {
   cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3C!-- left arrow --%3E%3Cpolygon points='2,14 8,9 8,12 12,12 12,16 8,16 8,19' fill='%23e60000'/%3E%3C!-- centre circle --%3E%3Ccircle cx='14' cy='14' r='3' fill='%23e60000'/%3E%3C!-- right arrow --%3E%3Cpolygon points='26,14 20,9 20,12 16,12 16,16 20,16 20,19' fill='%23e60000'/%3E%3C/svg%3E") 14 14, ew-resize !important;

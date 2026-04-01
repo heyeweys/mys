@@ -429,6 +429,8 @@ a:hover { color: var(--accent); }
   border-radius: 3px;
   letter-spacing: 0.08em;
   transition: border-color .2s, color .2s, background .2s;
+  user-select: none;
+  -webkit-user-select: none;
 }
 .tag:hover {
   border-color: var(--accent2);
@@ -448,7 +450,6 @@ a:hover { color: var(--accent); }
   margin: 24px 0;
   padding: 18px 20px;
   background: var(--bg2);
-  /* Two-tone left border: top half accent, fades to line */
   border: 1px solid var(--line2);
   border-left: 2px solid var(--accent);
   border-radius: 4px;
