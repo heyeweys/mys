@@ -1,4 +1,4 @@
-    .filter-bar {
+.filter-bar {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
@@ -19,7 +19,6 @@
     .filter-btn:hover { color: var(--text); border-color: var(--accent2); }
     .filter-btn.active { color: var(--text); border-color: var(--accent); background: #0d0d0d; }
 
-    /* Masonry-like grid */
     .gallery-grid {
       columns: 3 240px;
       gap: 10px;
@@ -71,7 +70,6 @@
       margin-bottom: 2px;
     }
 
-    /* Placeholder tiles (before real images) */
     .gallery-placeholder {
       width: 100%;
       background: var(--bg3);
@@ -86,7 +84,6 @@
       text-align: center;
     }
 
-    /* Lightbox */
     .lightbox {
       display: none;
       position: fixed;
@@ -142,4 +139,3 @@
     .lightbox-nav:hover { color: var(--text); background: var(--bg3); }
     .lightbox-nav.prev { left: 12px; }
     .lightbox-nav.next { right: 12px; }
- 

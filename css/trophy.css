@@ -1,4 +1,4 @@
-    .game-header {
+.game-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -134,7 +134,9 @@
     .stat-sub { font-family: var(--mono); font-size: 9px; color: #333; margin-top: 6px; letter-spacing: 0.06em; }
  
     /* ── HERO LEADERBOARD ── */
-    .hero-board { display: flex; flex-direction: column; border: 1px solid var(--line2); border-radius: 8px; overflow: hidden; }
+    .hero-board { display: flex; flex-direction: column; border: 1px solid var(--line2); border-radius: 8px; overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+}
     .hero-board-head {
       display: grid;
       grid-template-columns: 28px 1fr 120px 52px 44px;
@@ -177,7 +179,9 @@
     .hr-kda { font-family: var(--mono); font-size: 11px; color: var(--dim); text-align: right; }
  
     /* ── MATCH FEED ── */
-    .match-feed { display: flex; flex-direction: column; border: 1px solid var(--line2); border-radius: 8px; overflow: hidden; }
+    .match-feed { display: flex; flex-direction: column; border: 1px solid var(--line2); border-radius: 8px; overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+}
     .match-item {
       display: grid;
       grid-template-columns: 4px 44px 1fr auto;

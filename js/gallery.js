@@ -46,7 +46,6 @@ function buildGrid(items) {
 
     const ov = document.createElement('div');
     ov.className = 'gallery-item-overlay';
-    // [FIX] Use textContent instead of innerHTML to prevent XSS
     const cap = document.createElement('div');
     cap.className = 'gallery-item-caption';
     const tagSpan = document.createElement('span');
@@ -65,8 +64,6 @@ function buildGrid(items) {
 
 function openLb(i) {
   lbIdx = i;
-  // [FIX] Only use filtered array — `i` is always an index into `filtered`,
-  // the old fallback `|| GALLERY[i]` was wrong when a filter was active
   const item = filtered[i];
   if (!item) return;
   lbImg.src = item.src;

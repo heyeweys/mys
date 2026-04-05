@@ -1,6 +1,5 @@
 'use strict';
 
-// [FIX] Guard: if SoundCloud API failed to load, fail gracefully
 if (typeof SC === 'undefined') {
   const trackEl = document.getElementById('lcdTrack');
   if (trackEl) trackEl.textContent = 'player unavailable';
@@ -9,7 +8,6 @@ if (typeof SC === 'undefined') {
   throw new Error('SC Widget API not available');
 }
 
-/* ── DOM refs ────────────────────────────────────────── */
 const widget   = SC.Widget(document.getElementById('sc-widget'));
 const trackEl  = document.getElementById('lcdTrack');
 const artistEl = document.getElementById('lcdArtist');
@@ -22,20 +20,18 @@ const vSlider  = document.getElementById('volSlider');
 const plItems  = document.getElementById('plItems');
 const btnPlay  = document.getElementById('btnPlay');
 
-/* ── State ───────────────────────────────────────────── */
 let currentTracks   = [];
 let trackIndexMap   = [];
 let currentIdx      = 0;
 let isShuffle       = false;
 let currentDuration = 0;
-let userVolume      = 0.8;
+let userVolume      = 0.1;
 
 let isDraggingProgress = false;
 let isDraggingVolume   = false;
 let lastDirection      = 1;
 let skipGuard          = 0;
 
-/* ── Helpers ─────────────────────────────────────────── */
 const fmtMS = ms => {
   if (!isFinite(ms) || ms < 0) return '0:00';
   const s = Math.floor(ms / 1000);
@@ -50,7 +46,6 @@ function shufflePlay() {
   widget.skip(widgetIdx(Math.floor(Math.random() * currentTracks.length)));
 }
 
-/* ── Build playlist ──────────────────────────────────── */
 function buildList(sounds) {
   trackIndexMap = [];
   const valid   = [];
@@ -98,7 +93,6 @@ function loadSoundsWithRetry(attempt = 0, prevCount = -1) {
   });
 }
 
-/* ── Update player UI ────────────────────────────────── */
 function updatePlayerUI(sound) {
   if (!sound) return;
 
@@ -137,7 +131,6 @@ function setPlayIcon(playing) {
   btnPlay.classList.toggle('active', playing);
 }
 
-/* ── Progress drag ───────────────────────────────────── */
 function applyProgress(clientX) {
   if (!currentDuration) return;
   const r     = pBar.getBoundingClientRect();
@@ -170,7 +163,6 @@ document.addEventListener('touchend', () => {
   if (isDraggingProgress) { isDraggingProgress = false; pBar.classList.remove('dragging'); }
 });
 
-/* ── Volume drag ─────────────────────────────────────── */
 function applyVolume(clientX) {
   const r    = vSlider.getBoundingClientRect();
   userVolume = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
@@ -199,7 +191,6 @@ vSlider.addEventListener('touchstart', e => { startVolDrag(e.touches[0].clientX)
 document.addEventListener('touchmove', e => { if (isDraggingVolume) applyVolume(e.touches[0].clientX); }, { passive: true });
 document.addEventListener('touchend', endVolDrag);
 
-/* ── SoundCloud events ───────────────────────────────── */
 widget.bind(SC.Widget.Events.READY, () => {
   setTimeout(() => loadSoundsWithRetry(), 150);
 });
@@ -235,7 +226,6 @@ widget.bind(SC.Widget.Events.PLAY_PROGRESS, data => {
   timeEl.textContent = fmtMS(data.currentPosition);
 });
 
-/* ── Controls ────────────────────────────────────────── */
 plItems.addEventListener('click', e => {
   const item = e.target.closest('.pl-item');
   if (!item) return;
