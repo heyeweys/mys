@@ -9,13 +9,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;400&family=Noto+Sans+JP:wght@300;400&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="../css/base.css"/>
   <link rel="stylesheet" href="../css/gallery.css"/>
-
 </head>
 <body>
 <canvas class="rain-canvas" id="rainCanvas"></canvas>
 <div class="content-layer">
 
-<!-- NAV -->
 <nav class="site-nav">
   <div class="nav-inner">
     <ul class="nav-links">
@@ -23,7 +21,6 @@
       <li><a href="trophy.html">dota2_zone</a></li>
       <li><a href="music.html">music_room</a></li>
       <li><a href="gallery.html">gallery</a></li>
-      <li><a href="games.html">mini_games</a></li>
     </ul>
     <button class="nav-toggle" id="navToggle" aria-label="menu">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -34,7 +31,6 @@
     <a href="trophy.html">dota2_zone</a>
     <a href="music.html">music_room</a>
     <a href="gallery.html">gallery</a>
-    <a href="games.html">mini_games</a>
   </div>
 </nav>
 
@@ -43,63 +39,33 @@
     <div class="page-header fade-in">
       <p class="page-header-label">/ gallery</p>
       <h1 class="page-header-title">Gallery</h1>
-      <p class="page-header-sub">screenshots · art · pixels · moments</p>
+      <p class="page-header-sub">ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ</p>
     </div>
 
-    <section style="border-top:none; padding-top:0;">
+    <div class="g-filter-bar fade-in" id="filterBar">
+      <button class="g-filter-btn active" data-filter="all">all</button>
+      <button class="g-filter-btn" data-filter="games">games</button>
+      <button class="g-filter-btn" data-filter="irl">irl</button>
+      <button class="g-filter-btn" data-filter="ambience">ambience</button>
+      <button class="g-filter-btn" data-filter="1000-7">1000-7</button>
+      <button class="g-filter-btn" data-filter="other">other</button>
+    </div>
 
-      <!-- FILTER BAR -->
-      <div class="filter-bar fade-in" id="filterBar">
-        <button class="filter-btn active" data-filter="all">all</button>
-        <button class="filter-btn" data-filter="screenshots">screenshots</button>
-        <button class="filter-btn" data-filter="art">art</button>
-        <button class="filter-btn" data-filter="pixel">pixel</button>
-        <button class="filter-btn" data-filter="misc">misc</button>
-      </div>
+    <div id="galleryRoot"></div>
 
-      <!-- GALLERY GRID -->
-      <div class="gallery-grid fade-in" id="galleryGrid">
-        <!--
-          TO ADD IMAGES:
-          Replace src with your image path.
-          data-tag: screenshots | art | pixel | misc
-          data-caption: image title
-
-          Example:
-          <div class="gallery-item" data-tag="screenshots" data-caption="my 5k mmr peak">
-            <img src="images/dota_peak.jpg" alt="..."/>
-            <div class="gallery-item-overlay">
-              <div class="gallery-item-caption">
-                <span class="gallery-item-tag">screenshots</span>
-                my 5k mmr peak
-              </div>
-            </div>
-          </div>
-        -->
-      </div>
-
-      <!-- EMPTY STATE -->
-      <div id="emptyState" style="text-align:center; padding:80px 0;">
-        <p style="font-family:var(--mono);font-size:10px;color:var(--line2);letter-spacing:0.3em;">
-          NO IMAGES YET<br/><br/>
-          <span style="color:#1e1e1e;">
-            Add items to the GALLERY array<br/>
-            in the &lt;script&gt; tag below
-          </span>
-        </p>
-      </div>
-
-    </section>
+    <div id="emptyState" class="g-empty" style="display:none;">
+      <span class="g-empty-icon">∅</span>
+      <p>здесь пусто</p>
+    </div>
   </div>
 </main>
 
-<!-- LIGHTBOX -->
-<div class="lightbox" id="lightbox">
-  <button class="lightbox-close" id="lbClose">×</button>
-  <img class="lightbox-img" id="lbImg" src="" alt=""/>
-  <div class="lightbox-caption" id="lbCaption"></div>
-  <button class="lightbox-nav prev" id="lbPrev">‹</button>
-  <button class="lightbox-nav next" id="lbNext">›</button>
+<div class="lb" id="lb">
+  <button class="lb-close" id="lbClose">×</button>
+  <div class="lb-media" id="lbMedia"></div>
+  <div class="lb-caption" id="lbCaption"></div>
+  <button class="lb-nav lb-prev" id="lbPrev">‹</button>
+  <button class="lb-nav lb-next" id="lbNext">›</button>
 </div>
 
 <footer class="site-footer">

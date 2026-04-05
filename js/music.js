@@ -1,11 +1,9 @@
 'use strict';
 
 if (typeof SC === 'undefined') {
-  const trackEl = document.getElementById('lcdTrack');
-  if (trackEl) trackEl.textContent = 'player unavailable';
-  const artist = document.getElementById('lcdArtist');
-  if (artist) artist.textContent = 'SoundCloud API failed to load';
-  throw new Error('SC Widget API not available');
+  const t = document.getElementById('lcdTrack');
+  if (t) t.textContent = 'SC API unavailable';
+  throw new Error('SC not loaded');
 }
 
 const widget   = SC.Widget(document.getElementById('sc-widget'));
@@ -26,7 +24,6 @@ let currentIdx      = 0;
 let isShuffle       = false;
 let currentDuration = 0;
 let userVolume      = 0.1;
-
 let isDraggingProgress = false;
 let isDraggingVolume   = false;
 let lastDirection      = 1;
@@ -48,32 +45,21 @@ function shufflePlay() {
 
 function buildList(sounds) {
   trackIndexMap = [];
-  const valid   = [];
-
+  const valid = [];
   sounds.forEach((t, i) => {
     const title = (t.title || '').trim();
-    if (title && title.toLowerCase() !== 'unknown') {
-      valid.push(t);
-      trackIndexMap.push(i);
-    }
+    if (title && title.toLowerCase() !== 'unknown') { valid.push(t); trackIndexMap.push(i); }
   });
-
   currentTracks = valid;
   document.getElementById('plCount').textContent = `${valid.length} tracks`;
-
   plItems.innerHTML = valid.map((t, i) => {
-    // [FIX] Use textContent-safe rendering via template — titles are escaped
-    const title  = (t.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    const artist = (t.user ? t.user.username : '—').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    return `
-      <div class="pl-item${i === currentIdx ? ' active' : ''}" data-index="${i}">
-        <span class="pl-num">${String(i + 1).padStart(2, '0')}</span>
-        <div class="pl-info">
-          <div class="pl-name">${title}</div>
-          <div class="pl-artist">${artist}</div>
-        </div>
-        <span class="pl-dur">${fmtMS(t.duration)}</span>
-      </div>`;
+    const title  = (t.title || '').replace(/</g,'&lt;');
+    const artist = ((t.user && t.user.username) || '—').replace(/</g,'&lt;');
+    return `<div class="pl-item${i === currentIdx ? ' active' : ''}" data-index="${i}">
+      <span class="pl-num">${String(i+1).padStart(2,'0')}</span>
+      <div class="pl-info"><div class="pl-name">${title}</div><div class="pl-artist">${artist}</div></div>
+      <span class="pl-dur">${fmtMS(t.duration)}</span>
+    </div>`;
   }).join('');
 }
 
@@ -95,34 +81,22 @@ function loadSoundsWithRetry(attempt = 0, prevCount = -1) {
 
 function updatePlayerUI(sound) {
   if (!sound) return;
-
   const title = sound.title || '—';
-
   trackEl.classList.remove('scrolling');
   trackEl.textContent = title;
   void trackEl.offsetWidth;
-
   if (trackEl.scrollWidth > trackEl.parentElement.clientWidth + 4) {
     trackEl.textContent = title + '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0' + title;
     trackEl.classList.add('scrolling');
   }
-
   artistEl.textContent = sound.user ? sound.user.username : '—';
-
-  currentDuration   = sound.duration || 0;
+  currentDuration = sound.duration || 0;
   durEl.textContent = fmtMS(currentDuration);
-
-  const url   = sound.artwork_url || (sound.user && sound.user.avatar_url);
+  const url = sound.artwork_url || (sound.user && sound.user.avatar_url);
   const cover = document.getElementById('coverArt');
   const ph    = document.getElementById('coverPlaceholder');
-  if (url) {
-    cover.src           = url.replace('large', 't500x500');
-    cover.style.display = 'block';
-    ph.style.display    = 'none';
-  } else {
-    cover.style.display = 'none';
-    ph.style.display    = 'block';
-  }
+  if (url) { cover.src = url.replace('large','t500x500'); cover.style.display = 'block'; ph.style.display = 'none'; }
+  else      { cover.style.display = 'none'; ph.style.display = 'block'; }
 }
 
 function setPlayIcon(playing) {
@@ -133,75 +107,43 @@ function setPlayIcon(playing) {
 
 function applyProgress(clientX) {
   if (!currentDuration) return;
-  const r     = pBar.getBoundingClientRect();
+  const r = pBar.getBoundingClientRect();
   const ratio = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
   pFill.style.width = `${ratio * 100}%`;
   widget.seekTo(currentDuration * ratio);
 }
 
-pBar.addEventListener('mousedown', e => {
-  isDraggingProgress = true;
-  pBar.classList.add('dragging');
-  applyProgress(e.clientX);
-  e.preventDefault();
-});
-document.addEventListener('mousemove', e => {
-  if (isDraggingProgress) applyProgress(e.clientX);
-});
-document.addEventListener('mouseup', () => {
-  if (isDraggingProgress) { isDraggingProgress = false; pBar.classList.remove('dragging'); }
-});
-pBar.addEventListener('touchstart', e => {
-  isDraggingProgress = true;
-  pBar.classList.add('dragging');
-  applyProgress(e.touches[0].clientX);
-}, { passive: true });
-document.addEventListener('touchmove', e => {
-  if (isDraggingProgress) applyProgress(e.touches[0].clientX);
-}, { passive: true });
-document.addEventListener('touchend', () => {
-  if (isDraggingProgress) { isDraggingProgress = false; pBar.classList.remove('dragging'); }
-});
+pBar.addEventListener('mousedown', e => { isDraggingProgress = true; pBar.classList.add('dragging'); applyProgress(e.clientX); e.preventDefault(); });
+document.addEventListener('mousemove', e => { if (isDraggingProgress) applyProgress(e.clientX); });
+document.addEventListener('mouseup', () => { if (isDraggingProgress) { isDraggingProgress = false; pBar.classList.remove('dragging'); } });
+pBar.addEventListener('touchstart', e => { isDraggingProgress = true; pBar.classList.add('dragging'); applyProgress(e.touches[0].clientX); }, { passive: true });
+document.addEventListener('touchmove', e => { if (isDraggingProgress) applyProgress(e.touches[0].clientX); }, { passive: true });
+document.addEventListener('touchend', () => { if (isDraggingProgress) { isDraggingProgress = false; pBar.classList.remove('dragging'); } });
 
 function applyVolume(clientX) {
-  const r    = vSlider.getBoundingClientRect();
+  const r = vSlider.getBoundingClientRect();
   userVolume = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
   vFill.style.width = `${userVolume * 100}%`;
   widget.setVolume(userVolume * 100);
 }
-
-function startVolDrag(clientX) {
-  isDraggingVolume = true;
-  vSlider.classList.add('dragging');
-  document.body.classList.add('vol-cursor-active');
-  applyVolume(clientX);
-}
-function endVolDrag() {
-  if (!isDraggingVolume) return;
-  isDraggingVolume = false;
-  vSlider.classList.remove('dragging');
-  document.body.classList.remove('vol-cursor-active');
-}
+function startVolDrag(clientX) { isDraggingVolume = true; vSlider.classList.add('dragging'); document.body.classList.add('vol-cursor-active'); applyVolume(clientX); }
+function endVolDrag() { if (!isDraggingVolume) return; isDraggingVolume = false; vSlider.classList.remove('dragging'); document.body.classList.remove('vol-cursor-active'); }
 
 vSlider.addEventListener('mousedown', e => { startVolDrag(e.clientX); e.preventDefault(); });
 document.addEventListener('mousemove', e => { if (isDraggingVolume) applyVolume(e.clientX); });
 document.addEventListener('mouseup', endVolDrag);
-
 vSlider.addEventListener('touchstart', e => { startVolDrag(e.touches[0].clientX); }, { passive: true });
 document.addEventListener('touchmove', e => { if (isDraggingVolume) applyVolume(e.touches[0].clientX); }, { passive: true });
 document.addEventListener('touchend', endVolDrag);
 
-widget.bind(SC.Widget.Events.READY, () => {
-  setTimeout(() => loadSoundsWithRetry(), 150);
-});
+widget.bind(SC.Widget.Events.READY, () => { setTimeout(() => loadSoundsWithRetry(), 150); });
 
 widget.bind(SC.Widget.Events.PLAY, () => {
   widget.getCurrentSoundIndex(wi => {
     if (!trackIndexMap.includes(wi)) {
       skipGuard++;
       if (skipGuard > 10) { skipGuard = 0; return; }
-      if (lastDirection >= 0) widget.next();
-      else widget.prev();
+      if (lastDirection >= 0) widget.next(); else widget.prev();
       return;
     }
     skipGuard = 0;
@@ -218,7 +160,19 @@ widget.bind(SC.Widget.Events.PLAY, () => {
 widget.bind(SC.Widget.Events.PAUSE, () => setPlayIcon(false));
 
 widget.bind(SC.Widget.Events.FINISH, () => {
-  if (isShuffle) shufflePlay();
+  if (isShuffle) {
+    shufflePlay();
+  } else {
+    const nextIdx = currentIdx + 1;
+    if (nextIdx < currentTracks.length) {
+      lastDirection = 1;
+      widget.skip(widgetIdx(nextIdx));
+    } else {
+      lastDirection = 1;
+      widget.skip(widgetIdx(0));
+      widget.play();
+    }
+  }
 });
 
 widget.bind(SC.Widget.Events.PLAY_PROGRESS, data => {
@@ -237,27 +191,15 @@ plItems.addEventListener('click', e => {
 
 let touchHandled = false;
 btnPlay.addEventListener('touchend', e => {
-  e.preventDefault();
-  touchHandled = true;
-  widget.toggle();
-  btnPlay.blur();
+  e.preventDefault(); touchHandled = true; widget.toggle(); btnPlay.blur();
   setTimeout(() => { touchHandled = false; }, 400);
 });
-btnPlay.addEventListener('click', () => {
-  if (!touchHandled) widget.toggle();
-});
+btnPlay.addEventListener('click', () => { if (!touchHandled) widget.toggle(); });
 
-document.getElementById('btnPrev').addEventListener('click', () => {
-  lastDirection = -1;
-  widget.prev();
-});
-
+document.getElementById('btnPrev').addEventListener('click', () => { lastDirection = -1; widget.prev(); });
 document.getElementById('btnNext').addEventListener('click', () => {
-  if (isShuffle) shufflePlay();
-  else { lastDirection = 1; widget.next(); }
+  if (isShuffle) shufflePlay(); else { lastDirection = 1; widget.next(); }
 });
-
-document.getElementById('btnShuffle').addEventListener('click', function () {
-  isShuffle = !isShuffle;
-  this.classList.toggle('active', isShuffle);
+document.getElementById('btnShuffle').addEventListener('click', function() {
+  isShuffle = !isShuffle; this.classList.toggle('active', isShuffle);
 });
