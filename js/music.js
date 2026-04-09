@@ -18,16 +18,17 @@ const vSlider  = document.getElementById('volSlider');
 const plItems  = document.getElementById('plItems');
 const btnPlay  = document.getElementById('btnPlay');
 
-let currentTracks   = [];
-let trackIndexMap   = [];
-let currentIdx      = 0;
-let isShuffle       = false;
-let currentDuration = 0;
-let userVolume      = 0.1;
+let currentTracks      = [];
+let trackIndexMap      = [];
+let currentIdx         = 0;
+let isShuffle          = false;
+let currentDuration    = 0;
+let userVolume         = 0.1;
 let isDraggingProgress = false;
 let isDraggingVolume   = false;
 let lastDirection      = 1;
 let skipGuard          = 0;
+let skipGuardTimer     = null;
 
 const fmtMS = ms => {
   if (!isFinite(ms) || ms < 0) return '0:00';
@@ -36,6 +37,12 @@ const fmtMS = ms => {
 };
 
 const widgetIdx = di => trackIndexMap[di] ?? di;
+
+function bumpSkipGuard() {
+  skipGuard++;
+  clearTimeout(skipGuardTimer);
+  skipGuardTimer = setTimeout(() => { skipGuard = 0; }, 3000);
+}
 
 function shufflePlay() {
   if (!currentTracks.length) return;
@@ -48,55 +55,79 @@ function buildList(sounds) {
   const valid = [];
   sounds.forEach((t, i) => {
     const title = (t.title || '').trim();
-    if (title && title.toLowerCase() !== 'unknown') { valid.push(t); trackIndexMap.push(i); }
+    if (title && title.toLowerCase() !== 'unknown') {
+      valid.push(t);
+      trackIndexMap.push(i);
+    }
   });
   currentTracks = valid;
+
   document.getElementById('plCount').textContent = `${valid.length} tracks`;
+
+  if (currentIdx >= valid.length) currentIdx = 0;
+
   plItems.innerHTML = valid.map((t, i) => {
-    const title  = (t.title || '').replace(/</g,'&lt;');
-    const artist = ((t.user && t.user.username) || '—').replace(/</g,'&lt;');
+    const title  = (t.title || '').replace(/</g, '&lt;');
+    const artist = ((t.user && t.user.username) || '—').replace(/</g, '&lt;');
     return `<div class="pl-item${i === currentIdx ? ' active' : ''}" data-index="${i}">
-      <span class="pl-num">${String(i+1).padStart(2,'0')}</span>
-      <div class="pl-info"><div class="pl-name">${title}</div><div class="pl-artist">${artist}</div></div>
+      <span class="pl-num">${String(i + 1).padStart(2, '0')}</span>
+      <div class="pl-info">
+        <div class="pl-name">${title}</div>
+        <div class="pl-artist">${artist}</div>
+      </div>
       <span class="pl-dur">${fmtMS(t.duration)}</span>
     </div>`;
   }).join('');
 }
 
-function loadSoundsWithRetry(attempt = 0, prevCount = -1) {
+function loadSoundsWithRetry(attempt = 0, prevCount = -1, stableStreak = 0) {
   widget.getSounds(sounds => {
     const count = sounds.length;
-    if (count !== prevCount && attempt < 25) {
-      if (count > 0) buildList(sounds);
-      const delay = attempt < 5 ? 300 : attempt < 12 ? 500 : 800;
-      setTimeout(() => loadSoundsWithRetry(attempt + 1, count), delay);
+    const newStreak = (count === prevCount && count > 0) ? stableStreak + 1 : 0;
+
+    if (newStreak >= 4 || attempt >= 35) {
+      buildList(sounds);
+      widget.getCurrentSound(sound => updatePlayerUI(sound || currentTracks[0]));
+      widget.setVolume(userVolume * 100);
+      vFill.style.width = `${userVolume * 100}%`;
       return;
     }
-    buildList(sounds);
-    widget.getCurrentSound(sound => updatePlayerUI(sound || currentTracks[0]));
-    widget.setVolume(userVolume * 100);
-    vFill.style.width = `${userVolume * 100}%`;
+
+    if (count > 0) buildList(sounds);
+    const delay = attempt < 5 ? 400 : attempt < 15 ? 600 : 1000;
+    setTimeout(() => loadSoundsWithRetry(attempt + 1, count, newStreak), delay);
   });
 }
 
 function updatePlayerUI(sound) {
   if (!sound) return;
   const title = sound.title || '—';
+
   trackEl.classList.remove('scrolling');
   trackEl.textContent = title;
   void trackEl.offsetWidth;
-  if (trackEl.scrollWidth > trackEl.parentElement.clientWidth + 4) {
+
+  const parent = trackEl.parentElement;
+  if (parent && trackEl.scrollWidth > parent.clientWidth + 4) {
     trackEl.textContent = title + '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0' + title;
     trackEl.classList.add('scrolling');
   }
-  artistEl.textContent = sound.user ? sound.user.username : '—';
+
+  artistEl.textContent = (sound.user && sound.user.username) || '—';
   currentDuration = sound.duration || 0;
   durEl.textContent = fmtMS(currentDuration);
-  const url = sound.artwork_url || (sound.user && sound.user.avatar_url);
+
+  const url   = sound.artwork_url || (sound.user && sound.user.avatar_url);
   const cover = document.getElementById('coverArt');
   const ph    = document.getElementById('coverPlaceholder');
-  if (url) { cover.src = url.replace('large','t500x500'); cover.style.display = 'block'; ph.style.display = 'none'; }
-  else      { cover.style.display = 'none'; ph.style.display = 'block'; }
+  if (url) {
+    cover.src = url.replace('large', 't500x500');
+    cover.style.display = 'block';
+    ph.style.display = 'none';
+  } else {
+    cover.style.display = 'none';
+    ph.style.display = 'block';
+  }
 }
 
 function setPlayIcon(playing) {
@@ -113,12 +144,27 @@ function applyProgress(clientX) {
   widget.seekTo(currentDuration * ratio);
 }
 
-pBar.addEventListener('mousedown', e => { isDraggingProgress = true; pBar.classList.add('dragging'); applyProgress(e.clientX); e.preventDefault(); });
+pBar.addEventListener('mousedown', e => {
+  isDraggingProgress = true;
+  pBar.classList.add('dragging');
+  applyProgress(e.clientX);
+  e.preventDefault();
+});
 document.addEventListener('mousemove', e => { if (isDraggingProgress) applyProgress(e.clientX); });
-document.addEventListener('mouseup', () => { if (isDraggingProgress) { isDraggingProgress = false; pBar.classList.remove('dragging'); } });
-pBar.addEventListener('touchstart', e => { isDraggingProgress = true; pBar.classList.add('dragging'); applyProgress(e.touches[0].clientX); }, { passive: true });
-document.addEventListener('touchmove', e => { if (isDraggingProgress) applyProgress(e.touches[0].clientX); }, { passive: true });
-document.addEventListener('touchend', () => { if (isDraggingProgress) { isDraggingProgress = false; pBar.classList.remove('dragging'); } });
+document.addEventListener('mouseup', () => {
+  if (isDraggingProgress) { isDraggingProgress = false; pBar.classList.remove('dragging'); }
+});
+pBar.addEventListener('touchstart', e => {
+  isDraggingProgress = true;
+  pBar.classList.add('dragging');
+  applyProgress(e.touches[0].clientX);
+}, { passive: true });
+document.addEventListener('touchmove', e => {
+  if (isDraggingProgress) applyProgress(e.touches[0].clientX);
+}, { passive: true });
+document.addEventListener('touchend', () => {
+  if (isDraggingProgress) { isDraggingProgress = false; pBar.classList.remove('dragging'); }
+});
 
 function applyVolume(clientX) {
   const r = vSlider.getBoundingClientRect();
@@ -126,8 +172,18 @@ function applyVolume(clientX) {
   vFill.style.width = `${userVolume * 100}%`;
   widget.setVolume(userVolume * 100);
 }
-function startVolDrag(clientX) { isDraggingVolume = true; vSlider.classList.add('dragging'); document.body.classList.add('vol-cursor-active'); applyVolume(clientX); }
-function endVolDrag() { if (!isDraggingVolume) return; isDraggingVolume = false; vSlider.classList.remove('dragging'); document.body.classList.remove('vol-cursor-active'); }
+function startVolDrag(clientX) {
+  isDraggingVolume = true;
+  vSlider.classList.add('dragging');
+  document.body.classList.add('vol-cursor-active');
+  applyVolume(clientX);
+}
+function endVolDrag() {
+  if (!isDraggingVolume) return;
+  isDraggingVolume = false;
+  vSlider.classList.remove('dragging');
+  document.body.classList.remove('vol-cursor-active');
+}
 
 vSlider.addEventListener('mousedown', e => { startVolDrag(e.clientX); e.preventDefault(); });
 document.addEventListener('mousemove', e => { if (isDraggingVolume) applyVolume(e.clientX); });
@@ -136,18 +192,22 @@ vSlider.addEventListener('touchstart', e => { startVolDrag(e.touches[0].clientX)
 document.addEventListener('touchmove', e => { if (isDraggingVolume) applyVolume(e.touches[0].clientX); }, { passive: true });
 document.addEventListener('touchend', endVolDrag);
 
-widget.bind(SC.Widget.Events.READY, () => { setTimeout(() => loadSoundsWithRetry(), 150); });
+widget.bind(SC.Widget.Events.READY, () => {
+  setTimeout(() => loadSoundsWithRetry(), 150);
+});
 
 widget.bind(SC.Widget.Events.PLAY, () => {
   widget.getCurrentSoundIndex(wi => {
     if (!trackIndexMap.includes(wi)) {
-      skipGuard++;
+      bumpSkipGuard();
       if (skipGuard > 10) { skipGuard = 0; return; }
       if (lastDirection >= 0) widget.next(); else widget.prev();
       return;
     }
     skipGuard = 0;
+    clearTimeout(skipGuardTimer);
     setPlayIcon(true);
+
     const di = trackIndexMap.indexOf(wi);
     currentIdx = di;
     Array.from(plItems.children).forEach((el, i) => el.classList.toggle('active', i === di));
@@ -158,19 +218,19 @@ widget.bind(SC.Widget.Events.PLAY, () => {
 });
 
 widget.bind(SC.Widget.Events.PAUSE, () => setPlayIcon(false));
-
 widget.bind(SC.Widget.Events.FINISH, () => {
+  if (!currentTracks.length) return;   
+
   if (isShuffle) {
     shufflePlay();
   } else {
-    const nextIdx = currentIdx + 1;
-    if (nextIdx < currentTracks.length) {
-      lastDirection = 1;
-      widget.skip(widgetIdx(nextIdx));
+    const nextDi = currentIdx + 1;
+    lastDirection = 1;
+    if (nextDi < currentTracks.length) {
+      widget.skip(widgetIdx(nextDi));
     } else {
-      lastDirection = 1;
       widget.skip(widgetIdx(0));
-      widget.play();
+      setTimeout(() => widget.play(), 150);
     }
   }
 });
@@ -184,6 +244,7 @@ plItems.addEventListener('click', e => {
   const item = e.target.closest('.pl-item');
   if (!item) return;
   const di = parseInt(item.dataset.index, 10);
+  if (isNaN(di) || di < 0 || di >= currentTracks.length) return;
   lastDirection = di >= currentIdx ? 1 : -1;
   if (currentIdx === di) { widget.seekTo(0); widget.play(); }
   else widget.skip(widgetIdx(di));
@@ -191,15 +252,23 @@ plItems.addEventListener('click', e => {
 
 let touchHandled = false;
 btnPlay.addEventListener('touchend', e => {
-  e.preventDefault(); touchHandled = true; widget.toggle(); btnPlay.blur();
+  e.preventDefault();
+  touchHandled = true;
+  widget.toggle();
+  btnPlay.blur();
   setTimeout(() => { touchHandled = false; }, 400);
 });
 btnPlay.addEventListener('click', () => { if (!touchHandled) widget.toggle(); });
 
-document.getElementById('btnPrev').addEventListener('click', () => { lastDirection = -1; widget.prev(); });
-document.getElementById('btnNext').addEventListener('click', () => {
-  if (isShuffle) shufflePlay(); else { lastDirection = 1; widget.next(); }
+document.getElementById('btnPrev').addEventListener('click', () => {
+  lastDirection = -1;
+  widget.prev();
 });
-document.getElementById('btnShuffle').addEventListener('click', function() {
-  isShuffle = !isShuffle; this.classList.toggle('active', isShuffle);
+document.getElementById('btnNext').addEventListener('click', () => {
+  if (isShuffle) shufflePlay();
+  else { lastDirection = 1; widget.next(); }
+});
+document.getElementById('btnShuffle').addEventListener('click', function () {
+  isShuffle = !isShuffle;
+  this.classList.toggle('active', isShuffle);
 });
